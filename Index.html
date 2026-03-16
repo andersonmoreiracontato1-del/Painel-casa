@@ -460,21 +460,16 @@ function setTvState(on){
   localStorage.setItem('tvOn', on);
 }
 
-async function checkRokuStatus(){
+async function checkRoku(){
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(()=>controller.abort(), 2000);
-    await fetch('http://'+ROKU_IP+':8060/query/device-info', {
-      method:'GET', mode:'no-cors', signal: controller.signal, cache:'no-store'
-    });
-    clearTimeout(timeout);
-    setTvState(true);
+    const r = await fetch('http://'+ROKU_IP+':8060/query/active-app');
+    if(r.ok){ setTvState(true); }
   } catch(e){
     setTvState(false);
   }
 }
-setInterval(checkRokuStatus, 5000);
-checkRokuStatus();
+setInterval(checkRoku, 5000);
+checkRoku();
 
 async function openMusic(){
   soundMusic();
