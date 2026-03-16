@@ -428,20 +428,10 @@ async function toggleTV(){
 
 async function openMusic(){
   soundMusic();
-  const sub = document.getElementById('s-music');
-  const player = document.getElementById('d-player');
-  if(musicOpen){
-    await fetch('http://'+ROKU_IP+':8060/keypress/Home', {method:'POST', mode:'no-cors'});
-    setTimeout(()=>{ fetch('http://'+ROKU_IP+':8060/keypress/InputTuner',{method:'POST',mode:'no-cors'}); }, 800);
-    player.style.display = 'none';
-    sub.textContent = 'YouTube · Playlist';
-    musicOpen = false;
-    toast('📺 Voltando para TV');
-    return;
-  }
-  sub.textContent = 'Abrindo...';
-  player.style.display = 'flex';
   musicOpen = true;
+  document.getElementById('music-single').style.display = 'none';
+  document.getElementById('music-split').style.display = 'flex';
+  document.getElementById('s-music').textContent = 'Abrindo...';
   try {
     await fetch('http://'+ROKU_IP+':8060/launch/837?contentId='+YOUTUBE_PLAYLIST+'&mediaType=video', {method:'POST', mode:'no-cors'});
     setTimeout(()=>{ fetch('http://'+ROKU_IP+':8060/keypress/Play',{method:'POST',mode:'no-cors'}); }, 2000);
@@ -451,7 +441,18 @@ async function openMusic(){
   } catch(e){
     toast('⚠ Verifique o Wi-Fi', true);
   }
-  setTimeout(()=>{ sub.textContent = 'YouTube · Playlist'; }, 3000);
+  setTimeout(()=>{ document.getElementById('s-music').textContent = 'YouTube · Playlist'; }, 3000);
+}
+
+async function closeMusic(){
+  await fetch('http://'+ROKU_IP+':8060/keypress/Home', {method:'POST', mode:'no-cors'});
+  setTimeout(()=>{ fetch('http://'+ROKU_IP+':8060/keypress/InputTuner',{method:'POST',mode:'no-cors'}); }, 800);
+  musicOpen = false;
+  document.getElementById('music-single').style.display = 'flex';
+  document.getElementById('music-split').style.display = 'none';
+  document.getElementById('s-music').textContent = 'YouTube · Playlist';
+  toast('📺 Voltando para TV');
+}
 }
 
 async function togglePlayer(){
