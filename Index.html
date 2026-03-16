@@ -191,14 +191,14 @@ iframe, div[style*='position:fixed'][style*='bottom'],
           <div class="card-sub" id="s-music">YouTube · Playlist</div>
         </div>
         <!-- Estado ativo: dois botões -->
-        <div id="music-split" style="display:none;width:100%;height:100%;flex-direction:column;">
-          <div onclick="closeMusic()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:pointer;padding:10px;">
+        <div id="music-split" style="display:none;width:100%;height:100%;flex:1;flex-direction:column;">
+          <div onclick="closeMusic()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:pointer;">
             <div style="font-size:22px;">📺</div>
-            <div style="font-size:3.5vw;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:0.05em;">Voltar TV</div>
+            <div style="font-size:3.5vw;font-weight:700;color:var(--cyan);text-transform:uppercase;">Voltar TV</div>
           </div>
-          <div onclick="togglePlayer()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;cursor:pointer;padding:10px;">
+          <div onclick="togglePlayer()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;cursor:pointer;">
             <div style="font-size:22px;">⏯</div>
-            <div style="font-size:3.5vw;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.05em;">Play / Pause</div>
+            <div style="font-size:3.5vw;font-weight:700;color:var(--purple);text-transform:uppercase;">Play / Pause</div>
           </div>
         </div>
       </div>
@@ -429,9 +429,10 @@ async function toggleTV(){
 async function openMusic(){
   soundMusic();
   musicOpen = true;
-  document.getElementById('music-single').style.display = 'none';
-  document.getElementById('music-split').style.display = 'flex';
-  document.getElementById('s-music').textContent = 'Abrindo...';
+  const single = document.getElementById('music-single');
+  const split = document.getElementById('music-split');
+  if(single) single.style.display = 'none';
+  if(split) split.style.display = 'flex';
   try {
     await fetch('http://'+ROKU_IP+':8060/launch/837?contentId='+YOUTUBE_PLAYLIST+'&mediaType=video', {method:'POST', mode:'no-cors'});
     setTimeout(()=>{ fetch('http://'+ROKU_IP+':8060/keypress/Play',{method:'POST',mode:'no-cors'}); }, 2000);
@@ -441,7 +442,6 @@ async function openMusic(){
   } catch(e){
     toast('⚠ Verifique o Wi-Fi', true);
   }
-  setTimeout(()=>{ document.getElementById('s-music').textContent = 'YouTube · Playlist'; }, 3000);
 }
 
 async function closeMusic(){
