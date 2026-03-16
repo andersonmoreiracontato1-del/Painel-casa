@@ -463,7 +463,9 @@ function setTvState(on){
 async function checkRoku(){
   try {
     const r = await fetch('http://'+ROKU_IP+':8060/query/active-app');
-    if(r.ok){ setTvState(true); }
+    const txt = await r.text();
+    if(txt.includes('<app>')){ setTvState(true); }
+    else { setTvState(false); }
   } catch(e){
     setTvState(false);
   }
