@@ -222,9 +222,28 @@ const TG_CHAT  = '6952099836';
 // Deixe FULLY_PASSWORD vazio se não tiver senha configurada no Fully
 // Fully JS Interface — gratuito, sem necessidade de REST API
 
-let tvOn = false;
+// Carrega estado salvo
+let tvOn = localStorage.getItem('tvOn') === 'true';
 let musicOpen = false;
 let relatorioEnviadoHoje = false;
+
+// Aplica estado salvo ao carregar
+(function(){
+  if(tvOn){
+    const card = document.getElementById('d-tv');
+    const pill = document.getElementById('p-tv');
+    const sub  = document.getElementById('s-tv');
+    if(card){ card.classList.add('on','cyan'); pill.classList.add('on'); sub.textContent = 'Ligada'; }
+  }
+  [['lamp','amber','Ligada'],['ref','green','5 ligados']].forEach(([key,color,onTxt])=>{
+    if(localStorage.getItem('state_'+key) === 'on'){
+      const card = document.getElementById('d-'+key);
+      const pill = document.getElementById('p-'+key);
+      const sub  = document.getElementById('s-'+key);
+      if(card){ card.classList.add('on',color); pill.classList.add('on'); sub.textContent = onTxt; }
+    }
+  });
+})();
 
 // CONTADORES
 const count = { lamp:0, ref:0, tv:0, music:0 };
@@ -403,10 +422,12 @@ function toggle(key, color, onTxt, offTxt){
     card.classList.remove('on',color); pill.classList.remove('on'); sub.textContent = offTxt;
     if(key==='lamp'){ count.lamp++; tgNotify('💡 Lâmpada Sala — Desligada'); }
     if(key==='ref'){  count.ref++;  tgNotify('🔦 Refletores — Desligados'); }
+    localStorage.setItem('state_'+key, 'off');
   } else {
     card.classList.add('on',color); pill.classList.add('on'); sub.textContent = onTxt;
     if(key==='lamp'){ count.lamp++; tgNotify('💡 Lâmpada Sala — Ligada'); }
     if(key==='ref'){  count.ref++;  tgNotify('🔦 Refletores — 5 ligados'); }
+    localStorage.setItem('state_'+key, 'on');
   }
 }
 
@@ -418,6 +439,7 @@ async function toggleTV(){
   const sub  = document.getElementById('s-tv');
   if(tvOn){ card.classList.add('on','cyan'); pill.classList.add('on'); sub.textContent = 'Ligada'; }
   else { card.classList.remove('on','cyan'); pill.classList.remove('on'); sub.textContent = 'Desligada'; }
+  localStorage.setItem('tvOn', tvOn);
   try {
     await fetch('http://'+ROKU_IP+':8060/keypress/Power', {method:'POST', mode:'no-cors'});
     toast(tvOn ? '📺 TV ligada!' : '📺 TV desligada!');
@@ -425,6 +447,34 @@ async function toggleTV(){
     tgNotify(tvOn ? '📺 Televisão — Ligada' : '📺 Televisão — Desligada');
   } catch(e){ toast('⚠ Verifique o Wi-Fi', true); }
 }
+
+// POLLING ROKU — verifica estado real da TV a cada 5s
+function setTvState(on){
+  if(tvOn === on) return;
+  tvOn = on;
+  const card = document.getElementById('d-tv');
+  const pill = document.getElementById('p-tv');
+  const sub  = document.getElementById('s-tv');
+  if(on){ card.classList.add('on','cyan'); pill.classList.add('on'); sub.textContent = 'TV online'; }
+  else { card.classList.remove('on','cyan'); pill.classList.remove('on'); sub.textContent = 'TV offline'; }
+  localStorage.setItem('tvOn', on);
+}
+
+async function checkRokuStatus(){
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 2000);
+    await fetch('http://'+ROKU_IP+':8060/query/device-info', {
+      method:'GET', mode:'no-cors', signal: controller.signal, cache:'no-store'
+    });
+    clearTimeout(timeout);
+    setTvState(true);
+  } catch(e){
+    setTvState(false);
+  }
+}
+setInterval(checkRokuStatus, 5000);
+checkRokuStatus();
 
 async function openMusic(){
   soundMusic();
