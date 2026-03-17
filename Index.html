@@ -1,531 +1,269 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#080c14">
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ2FzYSBJbnRlbGlnZW50ZSIsInNob3J0X25hbWUiOiJDYXNhIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwODBjMTQiLCJ0aGVtZV9jb2xvciI6IiMwODBjMTQiLCJvcmllbnRhdGlvbiI6InBvcnRyYWl0LXByaW1hcnkifQo=">
-<title>Casa Inteligente</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#080c14"><title>Casa Inteligente</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"><style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
-:root{
-  --bg:#080c14;--card:#111827;--card2:#1a2438;
-  --border:rgba(255,255,255,0.07);
-  --amber:#fbbf24;--amber-glow:rgba(251,191,36,0.4);
-  --green:#4ade80;--green-glow:rgba(74,222,128,0.4);
-  --cyan:#22d3ee;--cyan-glow:rgba(34,211,238,0.4);
-  --purple:#a78bfa;--purple-glow:rgba(167,139,250,0.4);
-  --white:#ffffff;--muted:#8896a8;
-  --mono:'DM Mono',monospace;
-}
+:root{--bg:#080c14;--card:#111827;--card2:#1a2438;--border:rgba(255,255,255,0.07);--amber:#fbbf24;--ag:rgba(251,191,36,0.4);--green:#4ade80;--gg:rgba(74,222,128,0.4);--cyan:#22d3ee;--cg:rgba(34,211,238,0.4);--purple:#a78bfa;--pg:rgba(167,139,250,0.4);--white:#fff;--mono:'DM Mono',monospace;}
 html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--white);position:fixed;top:0;left:0;}
-.page{height:100vh;width:100%;overflow:hidden;padding:24px 18px 24px;background:radial-gradient(ellipse 100% 35% at 50% 0%,#1c3a5a28,transparent),var(--bg);display:flex;flex-direction:column;}
-.page::-webkit-scrollbar{display:none;}
-
-/* HEADER */
-.header{width:100%;margin-bottom:18px;}
-
-/* RELÓGIO com estado de hold */
-.clock{
-  font-family:var(--mono);
-  font-size:clamp(4rem,20vw,6rem);
-  font-weight:500;
-  letter-spacing:-4px;
-  line-height:1;
-  color:var(--white);
-  text-shadow:0 0 40px rgba(255,255,255,0.08);
-  cursor:pointer;
-  transition:color 0.3s, text-shadow 0.3s;
-  display:inline-block;
-  position:relative;
-}
-.clock.holding{
-  color: rgba(255,255,255,0.4);
-  text-shadow: 0 0 40px rgba(255,255,255,0.03);
-}
-
-/* Barra de progresso do hold */
-.clock-progress{
-  position:absolute;
-  bottom:-6px;
-  left:0;
-  height:2px;
-  width:0%;
-  background:rgba(255,255,255,0.3);
-  border-radius:2px;
-  transition:none;
-}
-.clock-progress.animating{
-  transition:width 3s linear;
-  width:100%;
-}
-
-.weekday{font-size:clamp(1.8rem,9vw,2.6rem);font-weight:700;color:var(--white);margin-top:4px;text-transform:capitalize;letter-spacing:-0.5px;line-height:1;}
-.date-location{font-size:clamp(1rem,5vw,1.3rem);font-weight:600;color:var(--white);margin-top:5px;text-transform:capitalize;opacity:0.9;}
-
-.line{width:100%;height:1px;background:var(--border);margin-bottom:18px;}
-
-/* GRID 2x2 */
-.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;width:100%;flex:1;min-height:0;}
-.grid-wrap{display:flex;flex-direction:column;width:100%;flex:1;gap:12px;min-height:0;max-height:calc(100vh - 200px);}
-.card-full{grid-column:1 / -1;}
-.card-player{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px 20px;cursor:pointer;transition:transform 0.18s,border-color 0.3s,box-shadow 0.3s;position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;width:100%;max-height:70px;flex-shrink:0;}
-.card-player:active{transform:scale(0.97);}
-.card-player .icon{width:40px;height:40px;border-radius:12px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.card-player .info{display:flex;flex-direction:column;}
-.card-player .card-name{font-size:15px;font-weight:600;color:var(--purple);}
-.card-player .card-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.05em;}
-
-.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 18px 24px;cursor:pointer;transition:transform 0.18s cubic-bezier(0.34,1.56,0.64,1),border-color 0.3s,box-shadow 0.3s;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;}
-.card::before{content:'';position:absolute;inset:0;border-radius:24px;opacity:0;transition:opacity 0.3s;pointer-events:none;}
-.card:active{transform:scale(0.96);}
-
-.card.on.amber{border-color:rgba(251,191,36,0.3);box-shadow:0 0 30px var(--amber-glow),inset 0 0 20px rgba(251,191,36,0.05);}
-.card.on.amber::before{background:radial-gradient(ellipse at center,var(--amber-glow) 0%,transparent 70%);opacity:1;}
-.card.on.green{border-color:rgba(74,222,128,0.3);box-shadow:0 0 30px var(--green-glow),inset 0 0 20px rgba(74,222,128,0.05);}
-.card.on.green::before{background:radial-gradient(ellipse at center,var(--green-glow) 0%,transparent 70%);opacity:1;}
-.card.on.cyan{border-color:rgba(34,211,238,0.3);box-shadow:0 0 30px var(--cyan-glow),inset 0 0 20px rgba(34,211,238,0.05);}
-.card.on.cyan::before{background:radial-gradient(ellipse at center,var(--cyan-glow) 0%,transparent 70%);opacity:1;}
-.card.on.purple{border-color:rgba(167,139,250,0.3);box-shadow:0 0 30px var(--purple-glow),inset 0 0 20px rgba(167,139,250,0.05);}
-.card.on.purple::before{background:radial-gradient(ellipse at center,var(--purple-glow) 0%,transparent 70%);opacity:1;}
-
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
-.icon{width:52px;height:52px;border-radius:16px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all 0.3s;}
-.card.on .icon{transform:scale(1.1);}
-.card.on.amber .icon{background:rgba(251,191,36,0.15);box-shadow:0 0 20px var(--amber-glow);}
-.card.on.green .icon{background:rgba(74,222,128,0.15);box-shadow:0 0 20px var(--green-glow);}
-.card.on.cyan .icon{background:rgba(34,211,238,0.15);box-shadow:0 0 20px var(--cyan-glow);}
-.card.on.purple .icon{background:rgba(167,139,250,0.15);box-shadow:0 0 20px var(--purple-glow);}
-
-.pill{width:44px;height:26px;border-radius:13px;background:var(--card2);border:1px solid rgba(255,255,255,0.08);position:relative;transition:background 0.3s;flex-shrink:0;}
-.pill::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 1px 4px rgba(0,0,0,0.5);}
+.page{position:fixed;top:0;left:0;width:100%;height:100%;padding:24px 18px;background:radial-gradient(ellipse 100% 35% at 50% 0%,#1c3a5a28,transparent),var(--bg);display:flex;flex-direction:column;transition:transform .38s cubic-bezier(.4,0,.2,1);will-change:transform;overflow:hidden;}
+#p1{transform:translateX(0);z-index:1;}#p1.hide{transform:translateX(-100%);}
+#p2{transform:translateX(100%);z-index:2;}#p2.show{transform:translateX(0);}
+#p3{transform:translateX(100%);z-index:2;}#p3.show{transform:translateX(0);}
+.hint{position:absolute;right:8px;top:50%;transform:translateY(-50%);opacity:.3;pointer-events:none;animation:hp 2.8s ease-in-out infinite;}
+@keyframes hp{0%,100%{opacity:.3;transform:translateY(-50%) translateX(0);}50%{opacity:.55;transform:translateY(-50%) translateX(5px);}}
+.hint svg{width:22px;height:22px;display:block;}
+.hdr{width:100%;margin-bottom:18px;}
+.clk{font-family:var(--mono);font-size:clamp(4rem,20vw,6rem);font-weight:500;letter-spacing:-4px;line-height:1;color:var(--white);cursor:pointer;transition:color .3s;display:inline-block;position:relative;}
+.clk.holding{color:rgba(255,255,255,.4);}
+.clkp{position:absolute;bottom:-6px;left:0;height:2px;width:0%;background:rgba(255,255,255,.3);border-radius:2px;transition:none;}
+.clkp.anim{transition:width 3s linear;width:100%;}
+.wday{font-size:clamp(1.8rem,9vw,2.6rem);font-weight:700;margin-top:4px;text-transform:capitalize;letter-spacing:-.5px;line-height:1;}
+.dloc{font-size:clamp(1rem,5vw,1.3rem);font-weight:600;margin-top:5px;text-transform:capitalize;opacity:.9;}
+.ln{width:100%;height:1px;background:var(--border);margin-bottom:18px;}
+.gw{display:flex;flex-direction:column;width:100%;flex:1;gap:12px;min-height:0;max-height:calc(100vh - 200px);}
+.gr{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;width:100%;flex:1;min-height:0;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 18px 24px;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .3s;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;}
+.card::before{content:'';position:absolute;inset:0;border-radius:24px;opacity:0;transition:opacity .3s;pointer-events:none;}
+.card:active{transform:scale(.96);}
+.card.on.a{border-color:rgba(251,191,36,.3);box-shadow:0 0 30px var(--ag),inset 0 0 20px rgba(251,191,36,.05);}
+.card.on.a::before{background:radial-gradient(ellipse at center,var(--ag) 0%,transparent 70%);opacity:1;}
+.card.on.g{border-color:rgba(74,222,128,.3);box-shadow:0 0 30px var(--gg),inset 0 0 20px rgba(74,222,128,.05);}
+.card.on.g::before{background:radial-gradient(ellipse at center,var(--gg) 0%,transparent 70%);opacity:1;}
+.card.on.c{border-color:rgba(34,211,238,.3);box-shadow:0 0 30px var(--cg),inset 0 0 20px rgba(34,211,238,.05);}
+.card.on.c::before{background:radial-gradient(ellipse at center,var(--cg) 0%,transparent 70%);opacity:1;}
+.card.on.p{border-color:rgba(167,139,250,.3);box-shadow:0 0 30px var(--pg),inset 0 0 20px rgba(167,139,250,.05);}
+.card.on.p::before{background:radial-gradient(ellipse at center,var(--pg) 0%,transparent 70%);opacity:1;}
+.ct{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.ic{width:52px;height:52px;border-radius:16px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .3s;}
+.card.on .ic{transform:scale(1.1);}
+.card.on.a .ic{background:rgba(251,191,36,.15);box-shadow:0 0 20px var(--ag);}
+.card.on.g .ic{background:rgba(74,222,128,.15);box-shadow:0 0 20px var(--gg);}
+.card.on.c .ic{background:rgba(34,211,238,.15);box-shadow:0 0 20px var(--cg);}
+.card.on.p .ic{background:rgba(167,139,250,.15);box-shadow:0 0 20px var(--pg);}
+.pill{width:44px;height:26px;border-radius:13px;background:var(--card2);border:1px solid rgba(255,255,255,.08);position:relative;transition:background .3s;flex-shrink:0;}
+.pill::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 4px rgba(0,0,0,.5);}
 .pill.on::after{transform:translateX(18px);}
-.pill.on.amber{background:var(--amber);}
-.pill.on.green{background:var(--green);}
-.pill.on.cyan{background:var(--cyan);}
-.pill.on.purple{background:var(--purple);}
+.pill.on.a{background:var(--amber);}.pill.on.g{background:var(--green);}.pill.on.c{background:var(--cyan);}.pill.on.p{background:var(--purple);}
+.cn{font-size:8vw;font-weight:800;color:var(--white);transition:color .3s;text-transform:uppercase;line-height:1.1;}
+.card.on.a .cn{color:var(--amber);}.card.on.g .cn{color:var(--green);}.card.on.c .cn{color:var(--cyan);}.card.on.p .cn{color:var(--purple);}
+.cs{font-family:var(--mono);font-size:4vw;font-weight:700;color:var(--white);opacity:.7;margin-top:6px;text-transform:uppercase;letter-spacing:.05em;transition:color .3s;white-space:nowrap;}
+.card.on.a .cs{color:var(--amber);opacity:1;}.card.on.g .cs{color:var(--green);opacity:1;}.card.on.c .cs{color:var(--cyan);opacity:1;}.card.on.p .cs{color:var(--purple);opacity:1;}
+.sh{font-family:var(--mono);font-size:clamp(3.2rem,16vw,5rem);font-weight:500;letter-spacing:-3px;line-height:1;color:var(--white);}
+.ss{font-size:clamp(.9rem,4.5vw,1.2rem);font-weight:600;margin-top:5px;opacity:.55;text-transform:uppercase;letter-spacing:.05em;font-family:var(--mono);}
+.sg{display:flex;flex-direction:column;gap:12px;width:100%;flex:1;min-height:0;}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:0 22px;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1),border-color .25s,box-shadow .25s;display:flex;align-items:center;gap:16px;flex:1;position:relative;overflow:hidden;}
+.sb::before{content:'';position:absolute;inset:0;border-radius:24px;opacity:0;transition:opacity .3s;pointer-events:none;}
+.sb:active{transform:scale(.96);}
+.sb.a{border-color:rgba(251,191,36,.3);box-shadow:0 0 30px var(--ag),inset 0 0 20px rgba(251,191,36,.05);}
+.sb.a::before{background:radial-gradient(ellipse at left center,var(--ag) 0%,transparent 70%);opacity:1;}
+.sb.g{border-color:rgba(74,222,128,.3);box-shadow:0 0 30px var(--gg),inset 0 0 20px rgba(74,222,128,.05);}
+.sb.g::before{background:radial-gradient(ellipse at left center,var(--gg) 0%,transparent 70%);opacity:1;}
+.sb.c{border-color:rgba(34,211,238,.3);box-shadow:0 0 30px var(--cg),inset 0 0 20px rgba(34,211,238,.05);}
+.sb.c::before{background:radial-gradient(ellipse at left center,var(--cg) 0%,transparent 70%);opacity:1;}
+.sb.p{border-color:rgba(167,139,250,.3);box-shadow:0 0 30px var(--pg),inset 0 0 20px rgba(167,139,250,.05);}
+.sb.p::before{background:radial-gradient(ellipse at left center,var(--pg) 0%,transparent 70%);opacity:1;}
+.si{font-size:32px;flex-shrink:0;}.sif{display:flex;flex-direction:column;flex:1;}
+.sn{font-size:8vw;font-weight:800;text-transform:uppercase;line-height:1.1;}
+.sd{font-family:var(--mono);font-size:3.5vw;font-weight:600;opacity:.7;margin-top:4px;text-transform:uppercase;letter-spacing:.05em;}
+.sb.a .sn{color:var(--amber);}.sb.g .sn{color:var(--green);}.sb.c .sn{color:var(--cyan);}.sb.p .sn{color:var(--purple);}
+.sb.a .sd{color:var(--amber);opacity:.8;}.sb.g .sd{color:var(--green);opacity:.8;}.sb.c .sd{color:var(--cyan);opacity:.8;}.sb.p .sd{color:var(--purple);opacity:.8;}
+.sctrl{display:flex;gap:8px;margin-top:6px;}
+.sctrl button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;font-size:18px;padding:4px 12px;cursor:pointer;transition:background .2s;}
+.sctrl button:active{background:rgba(255,255,255,.2);}
+iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.fully-banner{display:none!important;}
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);border:1px solid rgba(57,224,122,.3);color:#39e07a;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}.toast.err{border-color:rgba(239,68,68,.3);color:#ef4444;}
+</style></head><body>
 
-.card-name{font-size:8vw;font-weight:800;color:var(--white);transition:color 0.3s;text-transform:uppercase;line-height:1.1;}
-.card.on.amber .card-name{color:var(--amber);}
-.card.on.green .card-name{color:var(--green);}
-.card.on.cyan .card-name{color:var(--cyan);}
-.card.on.purple .card-name{color:var(--purple);}
-
-.card-sub{font-family:var(--mono);font-size:4vw;font-weight:700;color:var(--white);opacity:0.7;margin-top:6px;text-transform:uppercase;letter-spacing:0.05em;transition:color 0.3s;white-space:nowrap;}
-.card.on.amber .card-sub{color:var(--amber);opacity:1;}
-.card.on.green .card-sub{color:var(--green);opacity:1;}
-.card.on.cyan .card-sub{color:var(--cyan);opacity:1;}
-.card.on.purple .card-sub{color:var(--purple);opacity:1;}
-
-
-/* Esconder banner de licença do Fully */
-iframe, div[style*='position:fixed'][style*='bottom'], 
-#fully-license-banner, .fully-banner { display:none !important; }
-
-/* TOAST */
-.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);border:1px solid rgba(57,224,122,0.3);color:#39e07a;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all 0.25s;pointer-events:none;white-space:nowrap;z-index:200;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.error{border-color:rgba(239,68,68,0.3);color:#ef4444;}
-</style>
-</head>
-<body>
-<div class="page">
-  <div class="header">
-    <div class="clock" id="clock" 
-         onmousedown="startHold(event)" 
-         ontouchstart="startHold(event)" 
-         onmouseup="cancelHold()" 
-         onmouseleave="cancelHold()"
-         ontouchend="cancelHold()" 
-         ontouchcancel="cancelHold()">
-      00:00:00
-      <div class="clock-progress" id="clockProgress"></div>
-    </div>
-    <div class="weekday" id="weekday">---</div>
-    <div class="date-location" id="date-location">---</div>
-  </div>
-
-  <div class="line"></div>
-
-  <div class="grid-wrap">
-    <div class="grid">
-
-      <div class="card amber" id="d-lamp" onclick="toggle('lamp','amber','Ligada','Desligada')">
-        <div class="card-top">
-          <div class="icon">💡</div>
-          <div class="pill amber" id="p-lamp"></div>
-        </div>
-        <div class="card-name">Lâmpada Sala</div>
-        <div class="card-sub" id="s-lamp">Desligada</div>
-      </div>
-
-      <div class="card on green" id="d-ref" onclick="toggle('ref','green','5 ligados','Desligados')">
-        <div class="card-top">
-          <div class="icon">🔦</div>
-          <div class="pill on green" id="p-ref"></div>
-        </div>
-        <div class="card-name">Refletores</div>
-        <div class="card-sub" id="s-ref">5 ligados</div>
-      </div>
-
-      <div class="card" id="d-tv" onclick="toggleTV()">
-        <div class="card-top">
-          <div class="icon">📺</div>
-          <div class="pill cyan" id="p-tv"></div>
-        </div>
-        <div class="card-name">Televisão</div>
-        <div class="card-sub" id="s-tv">Desligada</div>
-      </div>
-
-      <div class="card" id="d-music" style="padding:0;overflow:hidden;">
-        <!-- Estado normal: botão único -->
-        <div id="music-single" onclick="openMusic()" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:28px 18px 24px;">
-          <div class="card-top">
-            <div class="icon">🎶</div>
-          </div>
-          <div class="card-name">Música</div>
-          <div class="card-sub" id="s-music">YouTube · Playlist</div>
-        </div>
-        <!-- Estado ativo: dois botões -->
-        <div id="music-split" style="display:none;width:100%;height:100%;flex:1;flex-direction:column;">
-          <div onclick="closeMusic()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:pointer;">
-            <div style="font-size:22px;">📺</div>
-            <div style="font-size:3.5vw;font-weight:700;color:var(--cyan);text-transform:uppercase;">Voltar TV</div>
-          </div>
-          <div onclick="togglePlayer()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;cursor:pointer;">
-            <div style="font-size:22px;">⏯</div>
-            <div style="font-size:3.5vw;font-weight:700;color:var(--purple);text-transform:uppercase;">Play / Pause</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-
-
-  </div>
+<!-- TELA 1 -->
+<div class="page" id="p1">
+<div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+<div class="hdr">
+<div class="clk" id="clk" onmousedown="sh(event)" ontouchstart="sh(event)" onmouseup="ch()" onmouseleave="ch()" ontouchend="ch()" ontouchcancel="ch()">00:00:00<div class="clkp" id="clkp"></div></div>
+<div class="wday" id="wd">---</div><div class="dloc" id="dl">---</div>
 </div>
+<div class="ln"></div>
+<div class="gw"><div class="gr">
+<div class="card a" id="d-lamp" onclick="tgl('lamp','a','Ligada','Desligada')">
+<div class="ct"><div class="ic">💡</div><div class="pill a" id="pl-lamp"></div></div>
+<div class="cn">Lâmpada</div><div class="cs" id="s-lamp">Desligada</div></div>
+<div class="card on g" id="d-ref" onclick="tgl('ref','g','5 ligados','Desligados')">
+<div class="ct"><div class="ic">🔦</div><div class="pill on g" id="pl-ref"></div></div>
+<div class="cn">Refletores</div><div class="cs" id="s-ref">5 ligados</div></div>
+<div class="card" id="d-tv" onclick="tTV()">
+<div class="ct"><div class="ic">📺</div><div class="pill c" id="pl-tv"></div></div>
+<div class="cn">Televisão</div><div class="cs" id="s-tv">Desligada</div></div>
+<div class="card" id="d-mus" style="padding:0;overflow:hidden;">
+<div id="ms1" onclick="oMus()" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:28px 18px 24px;">
+<div class="ct"><div class="ic">🎶</div></div><div class="cn">Música</div><div class="cs" id="s-mus">YouTube</div></div>
+<div id="ms2" style="display:none;width:100%;height:100%;flex:1;flex-direction:column;">
+<div onclick="cMus()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer;">
+<div style="font-size:22px;">📺</div><div style="font-size:3.5vw;font-weight:700;color:var(--cyan);text-transform:uppercase;">Voltar TV</div></div>
+<div onclick="tPl()" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;cursor:pointer;">
+<div style="font-size:22px;">⏯</div><div style="font-size:3.5vw;font-weight:700;color:var(--purple);text-transform:uppercase;">Play/Pause</div></div>
+</div></div>
+</div></div></div>
 
-<div class="toast" id="toastEl"></div>
+<!-- TELA 2 — MÚSICAS -->
+<div class="page" id="p2">
+<div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+<div class="hdr"><div class="sh">Músicas</div><div class="ss">Toque para tocar na TV</div></div>
+<div class="ln"></div>
+<div class="sg">
 
+<div class="sb a" id="mb-forro" onclick="tMusic('forro')">
+<div class="si">🎵</div>
+<div class="sif">
+<div class="sn">Forró</div>
+<div class="sd" id="msd-forro">Playlist</div>
+<div class="sctrl" id="mctrl-forro" style="display:none;">
+<button onclick="event.stopPropagation();tPl()">⏯</button>
+<button onclick="event.stopPropagation();nxt()">⏭</button>
+</div>
+</div></div>
+
+<div class="sb g" id="mb-gospel" onclick="tMusic('gospel')">
+<div class="si">🙏</div>
+<div class="sif">
+<div class="sn">Gospel</div>
+<div class="sd" id="msd-gospel">Em breve</div>
+</div></div>
+
+<div class="sb p" id="mb-pagode" onclick="tMusic('pagode')">
+<div class="si">🥁</div>
+<div class="sif">
+<div class="sn">Pagode</div>
+<div class="sd" id="msd-pagode">Em breve</div>
+</div></div>
+
+<div class="sb c" id="mb-antigas" onclick="tMusic('antigas')">
+<div class="si">🎶</div>
+<div class="sif">
+<div class="sn">Antigas</div>
+<div class="sd" id="msd-antigas">Em breve</div>
+</div></div>
+
+</div></div>
+
+<!-- TELA 3 — CENAS -->
+<div class="page" id="p3">
+<div class="hdr"><div class="sh">Cenas</div><div class="ss">Automação</div></div>
+<div class="ln"></div>
+<div class="sg">
+<div class="sb a" onclick="s1()"><div class="si">🌅</div><div class="sif"><div class="sn">Bom Dia</div><div class="sd">Em breve</div></div></div>
+<div class="sb p" onclick="s2()"><div class="si">🌙</div><div class="sif"><div class="sn">Boa Noite</div><div class="sd">Em breve</div></div></div>
+<div class="sb g" onclick="s3()"><div class="si">⚡</div><div class="sif"><div class="sn">Ligar Tudo</div><div class="sd">Em breve</div></div></div>
+<div class="sb c" onclick="s4()"><div class="si">🌑</div><div class="sif"><div class="sn">Desligar Tudo</div><div class="sd">Em breve</div></div></div>
+</div></div>
+
+<div class="toast" id="tst"></div>
 <script>
-const ROKU_IP = '192.168.0.125';
-const YOUTUBE_PLAYLIST = 'OUN0st_eWBI';
-const TG_TOKEN = '8694647682:AAGQrXfrCD6kjGwzx1eZpmN0r-hxHnWlLj8';
-const TG_CHAT  = '6952099836';
+const RK='192.168.0.125';
+const MUSIC={
+  forro:{list:'PLO0b5EuCB_XFqNEhrJy76pLkx1OMpZtTM'},
+  gospel:{list:null},
+  pagode:{list:null},
+  antigas:{list:null}
+};
+let tvOn=localStorage.getItem('tvOn')==='true';
+let curMusic=null;
 
-// Fully Kiosk — porta padrão 2323, senha definida nas configs do Fully
-// Deixe FULLY_PASSWORD vazio se não tiver senha configurada no Fully
-// Fully JS Interface — gratuito, sem necessidade de REST API
-
-// Carrega estado salvo
-let tvOn = localStorage.getItem('tvOn') === 'true';
-let musicOpen = false;
-let relatorioEnviadoHoje = false;
-
-// Aplica estado salvo ao carregar
 (function(){
-  if(tvOn){
-    const card = document.getElementById('d-tv');
-    const pill = document.getElementById('p-tv');
-    const sub  = document.getElementById('s-tv');
-    if(card){ card.classList.add('on','cyan'); pill.classList.add('on'); sub.textContent = 'Ligada'; }
-  }
-  [['lamp','amber','Ligada'],['ref','green','5 ligados']].forEach(([key,color,onTxt])=>{
-    if(localStorage.getItem('state_'+key) === 'on'){
-      const card = document.getElementById('d-'+key);
-      const pill = document.getElementById('p-'+key);
-      const sub  = document.getElementById('s-'+key);
-      if(card){ card.classList.add('on',color); pill.classList.add('on'); sub.textContent = onTxt; }
-    }
+  if(tvOn){const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(c){c.classList.add('on','c');p.classList.add('on');s.textContent='Ligada';}}
+  [['lamp','a','Ligada'],['ref','g','5 ligados']].forEach(([k,cl,t])=>{
+    if(localStorage.getItem('st_'+k)==='on'){const c=document.getElementById('d-'+k),p=document.getElementById('pl-'+k),s=document.getElementById('s-'+k);if(c){c.classList.add('on',cl);p.classList.add('on');s.textContent=t;}}
   });
 })();
 
-// CONTADORES
-const count = { lamp:0, ref:0, tv:0, music:0 };
-
-const NTFY_TOPIC = 'painel_anderson_2025';
-
-// ─── HOLD NO RELÓGIO — sai do Fully Kiosk ───────────────────────────────────
-let holdTimer = null;
-let holdStarted = false;
-
-function startHold(e){
-  // evita disparar o toggle de outros elementos
-  e.stopPropagation();
-  if(holdStarted) return;
-  holdStarted = true;
-
-  const clockEl = document.getElementById('clock');
-  const progressEl = document.getElementById('clockProgress');
-
-  clockEl.classList.add('holding');
-
-  // Inicia animação da barra
-  progressEl.style.transition = 'none';
-  progressEl.style.width = '0%';
-  // força reflow
-  progressEl.offsetWidth;
-  progressEl.classList.add('animating');
-
-  holdTimer = setTimeout(() => {
-    exitKiosk();
-  }, 3000);
+// SWIPE 3 TELAS
+let cur=1,tx=0,ty=0,trk=false;
+const pages={1:document.getElementById('p1'),2:document.getElementById('p2'),3:document.getElementById('p3')};
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;trk=false;},{passive:true});
+document.addEventListener('touchmove',e=>{const dx=Math.abs(e.touches[0].clientX-tx),dy=Math.abs(e.touches[0].clientY-ty);if(!trk&&dx>dy&&dx>8)trk=true;},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!trk)return;
+  const dx=e.changedTouches[0].clientX-tx;
+  if(dx<-50&&cur<3)goTo(cur+1);
+  else if(dx>50&&cur>1)goTo(cur-1);
+  trk=false;
+});
+function goTo(n){
+  const prev=cur;cur=n;
+  // esconde anterior
+  pages[prev].classList.remove('show');
+  if(prev===1)pages[1].classList.add('hide');
+  // mostra novo
+  if(n===1){pages[1].classList.remove('hide');}
+  else{pages[n].classList.add('show');}
 }
 
-function cancelHold(){
-  if(!holdStarted) return;
-  holdStarted = false;
-  clearTimeout(holdTimer);
+// HOLD RELÓGIO
+let ht=null,hs=false;
+function sh(e){e.stopPropagation();if(hs)return;hs=true;const cl=document.getElementById('clk'),pr=document.getElementById('clkp');cl.classList.add('holding');pr.style.transition='none';pr.style.width='0%';pr.offsetWidth;pr.classList.add('anim');ht=setTimeout(xk,3000);}
+function ch(){if(!hs)return;hs=false;clearTimeout(ht);const cl=document.getElementById('clk'),pr=document.getElementById('clkp');cl.classList.remove('holding');pr.classList.remove('anim');pr.style.transition='width .2s ease';pr.style.width='0%';}
+function xk(){ch();toast('🔓 Saindo...');try{if(typeof fully!=='undefined')fully.exitKiosk();else toast('⚠ Fully não detectado',true);}catch(e){toast('⚠ Erro',true);}}
 
-  const clockEl = document.getElementById('clock');
-  const progressEl = document.getElementById('clockProgress');
+// RELÓGIO
+function uc(){const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');const days=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];const mo=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];document.getElementById('clk').firstChild.textContent=h+':'+m+':'+s;document.getElementById('wd').textContent=days[n.getDay()];document.getElementById('dl').textContent=n.getDate()+' de '+mo[n.getMonth()]+' · Planalto';}
+uc();setInterval(uc,1000);
 
-  clockEl.classList.remove('holding');
-  progressEl.classList.remove('animating');
-  progressEl.style.transition = 'width 0.2s ease';
-  progressEl.style.width = '0%';
-}
+// SONS
+const aC=new (window.AudioContext||window.webkitAudioContext)();
+function pN(f,d=.4,v=.5){const o=aC.createOscillator(),g=aC.createGain(),fl=aC.createBiquadFilter();o.connect(fl);fl.connect(g);g.connect(aC.destination);o.type='triangle';fl.type='lowpass';fl.frequency.value=2000;o.frequency.value=f;g.gain.setValueAtTime(v,aC.currentTime);g.gain.exponentialRampToValueAtTime(.001,aC.currentTime+d);o.start(aC.currentTime);o.stop(aC.currentTime+d);}
+function pC(fs,d=.5){fs.forEach(f=>pN(f,d,.35));}
+function sLamp(){pC([261.6,329.6,392],.6);}function sRef(){pC([392,493.9,587.3],.5);}function sTV(){pC([329.6,415.3,523.3],.5);}function sMus(){pC([440,554.4,659.3,880],.7);}function sPl(){pN(523.3,.2,.4);}
 
-function exitKiosk(){
-  cancelHold();
-  toast('🔓 Saindo do kiosk...');
-  try {
-    if(typeof fully !== 'undefined'){
-      fully.exitKiosk();
-    } else {
-      toast('⚠ Fully não detectado', true);
-    }
-  } catch(e){
-    toast('⚠ Erro ao sair', true);
+// DISPOSITIVOS
+function tgl(k,cl,on,off){const c=document.getElementById('d-'+k),p=document.getElementById('pl-'+k),s=document.getElementById('s-'+k),isOn=c.classList.contains('on');if(k==='lamp')sLamp();if(k==='ref')sRef();if(isOn){c.classList.remove('on',cl);p.classList.remove('on');s.textContent=off;localStorage.setItem('st_'+k,'off');}else{c.classList.add('on',cl);p.classList.add('on');s.textContent=on;localStorage.setItem('st_'+k,'on');}}
+async function tTV(){sTV();tvOn=!tvOn;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(tvOn){c.classList.add('on','c');p.classList.add('on');s.textContent='Ligada';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='Desligada';}localStorage.setItem('tvOn',tvOn);try{await fetch('http://'+RK+':8060/keypress/Power',{method:'POST',mode:'no-cors'});toast(tvOn?'📺 TV ligada!':'📺 TV desligada!');}catch(e){toast('⚠ Wi-Fi?',true);}}
+function stv(on){if(tvOn===on)return;tvOn=on;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(on){c.classList.add('on','c');p.classList.add('on');s.textContent='TV online';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='TV offline';}localStorage.setItem('tvOn',on);}
+async function cRK(){try{const r=await fetch('http://'+RK+':8060/query/active-app');stv((await r.text()).includes('<app>'));}catch(e){stv(false);}}
+setInterval(cRK,5000);cRK();
+async function oMus(){sMus();document.getElementById('ms1').style.display='none';document.getElementById('ms2').style.display='flex';try{await fetch('http://'+RK+':8060/launch/837?contentId=PLO0b5EuCB_XFqNEhrJy76pLkx1OMpZtTM&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast('🎶 YouTube!');}catch(e){toast('⚠ Wi-Fi?',true);}}
+async function cMus(){await fetch('http://'+RK+':8060/keypress/Home',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/InputTuner',{method:'POST',mode:'no-cors'}),800);document.getElementById('ms1').style.display='flex';document.getElementById('ms2').style.display='none';document.getElementById('s-mus').textContent='YouTube';toast('📺 Voltando TV');}
+async function tPl(){sPl();try{await fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'});toast('⏯ Play/Pause');}catch(e){toast('⚠ Falha',true);}}
+
+// MÚSICAS TELA 2
+async function tMusic(id){
+  const m=MUSIC[id];
+  if(!m.list){toast('🔗 Link em breve!');return;}
+  if(curMusic===id){
+    // mesmo botão = para e reseta
+    curMusic=null;
+    document.getElementById('msd-'+id).textContent='Playlist';
+    document.getElementById('mctrl-'+id).style.display='none';
+    try{await fetch('http://'+RK+':8060/keypress/Home',{method:'POST',mode:'no-cors'});}catch(e){}
+    toast('⏹ Parado');return;
   }
-}
-// ────────────────────────────────────────────────────────────────────────────
-
-function tgNotify(msg){
-  fetch('https://ntfy.sh/'+NTFY_TOPIC, {
-    method:'POST',
-    body: msg
-  }).catch(()=>{});
-}
-
-// MONITORAMENTO DE BATERIA
-async function monitorBateria(){
-  if(!('getBattery' in navigator)) return;
-  const bat = await navigator.getBattery();
-  function verificar(){
-    const pct = Math.round(bat.level * 100);
-    if(pct <= 20 && !bat.charging){
-      tgNotify('🔋 Bateria CRÍTICA! '+pct+'% — Conecte o carregador AGORA!');
-    } else if(pct <= 30 && !bat.charging){
-      tgNotify('🔋 Bateria baixa! '+pct+'% — Carregue o painel!');
-    } else if(pct <= 40 && !bat.charging){
-      tgNotify('🔋 Bateria em '+pct+'% — Considere carregar em breve.');
-    }
+  // troca ou inicia
+  if(curMusic){
+    document.getElementById('msd-'+curMusic).textContent='Playlist';
+    document.getElementById('mctrl-'+curMusic) && (document.getElementById('mctrl-'+curMusic).style.display='none');
   }
-  bat.addEventListener('levelchange', verificar);
-  verificar();
+  curMusic=id;
+  document.getElementById('msd-'+id).textContent='Tocando...';
+  document.getElementById('mctrl-'+id) && (document.getElementById('mctrl-'+id).style.display='flex');
+  sMus();
+  try{
+    await fetch('http://'+RK+':8060/launch/837?contentId='+m.list+'&mediaType=video',{method:'POST',mode:'no-cors'});
+    setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);
+    toast('🎵 '+id.charAt(0).toUpperCase()+id.slice(1)+' na TV!');
+  }catch(e){toast('⚠ Wi-Fi?',true);}
 }
-monitorBateria();
+async function nxt(){sPl();try{await fetch('http://'+RK+':8060/keypress/Right',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Select',{method:'POST',mode:'no-cors'}),300);toast('⏭ Próxima');}catch(e){toast('⚠ Falha',true);}}
 
-// RELATÓRIO DIÁRIO ÀS 10H
-function checkRelatorio(){
-  const n = new Date();
-  if(n.getHours()===0 && n.getMinutes()===0) relatorioEnviadoHoje = false;
-  if(n.getHours()===10 && n.getMinutes()===0 && !relatorioEnviadoHoje){
-    const hoje = n.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'});
-    const msg =
-      '📊 Relatório do Painel — '+hoje+'\n\n'+
-      '💡 Lâmpada Sala: '+count.lamp+' vezes\n'+
-      '🔦 Refletores: '+count.ref+' vezes\n'+
-      '📺 Televisão: '+count.tv+' vezes\n'+
-      '🎶 Música: '+count.music+' vezes\n\n'+
-      '🏠 Casa Inteligente · Planalto';
-    tgNotify(msg);
-    count.lamp=0; count.ref=0; count.tv=0; count.music=0;
-    relatorioEnviadoHoje = true;
-  }
-}
-setInterval(checkRelatorio, 1000);
+// CENAS
+function s1(){toast('🌅 Bom dia! — configure em breve');}
+function s2(){toast('🌙 Boa noite! — configure em breve');}
+function s3(){toast('⚡ Ligar tudo — configure em breve');}
+function s4(){toast('🌑 Desligar tudo — configure em breve');}
 
-// AJUSTE DINÂMICO DE FONTE
-function ajustarFonte(){
-  const cards = document.querySelectorAll('.card-name');
-  cards.forEach(el=>{
-    const largura = el.parentElement.offsetWidth;
-    el.style.fontSize = (largura / 7) + 'px';
-  });
-  const subs = document.querySelectorAll('.card-sub');
-  subs.forEach(el=>{
-    const largura = el.parentElement.offsetWidth;
-    el.style.fontSize = (largura / 10) + 'px';
-  });
-}
-window.addEventListener('resize', ajustarFonte);
-ajustarFonte();
+// FONTE
+function af(){document.querySelectorAll('.cn').forEach(el=>el.style.fontSize=(el.parentElement.offsetWidth/7)+'px');document.querySelectorAll('.cs').forEach(el=>el.style.fontSize=(el.parentElement.offsetWidth/10)+'px');}
+window.addEventListener('resize',af);af();
 
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// BATERIA
+async function mb(){if(!('getBattery' in navigator))return;const b=await navigator.getBattery();function v(){const p=Math.round(b.level*100);if(p<=20&&!b.charging)toast('🔋 Crítica! '+p+'%',true);else if(p<=30&&!b.charging)toast('🔋 Baixa '+p+'%',true);}b.addEventListener('levelchange',v);v();}
+mb();
 
-function playNote(freq, duration=0.4, volume=0.5){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.type = 'triangle';
-  filter.type = 'lowpass';
-  filter.frequency.value = 2000;
-  osc.frequency.value = freq;
-  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  osc.start(audioCtx.currentTime);
-  osc.stop(audioCtx.currentTime + duration);
-}
+function toast(msg,e=false){const t=document.getElementById('tst');t.textContent=msg;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-function playChord(freqs, duration=0.5){
-  freqs.forEach(f => playNote(f, duration, 0.35));
-}
-
-function soundLamp(){ playChord([261.6, 329.6, 392], 0.6); }
-function soundRef(){ playChord([392, 493.9, 587.3], 0.5); }
-function soundTV(){ playChord([329.6, 415.3, 523.3], 0.5); }
-function soundMusic(){ playChord([440, 554.4, 659.3, 880], 0.7); }
-function soundPlay(){ playNote(523.3, 0.2, 0.4); }
-
-function updateClock(){
-  const n = new Date();
-  const h = String(n.getHours()).padStart(2,'0');
-  const m = String(n.getMinutes()).padStart(2,'0');
-  const s = String(n.getSeconds()).padStart(2,'0');
-  const days = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
-  const months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-  document.getElementById('clock').firstChild.textContent = h+':'+m+':'+s;
-  document.getElementById('weekday').textContent = days[n.getDay()];
-  document.getElementById('date-location').textContent = n.getDate()+' de '+months[n.getMonth()]+' · Planalto';
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-function toggle(key, color, onTxt, offTxt){
-  const card = document.getElementById('d-'+key);
-  const pill = document.getElementById('p-'+key);
-  const sub  = document.getElementById('s-'+key);
-  const isOn = card.classList.contains('on');
-  if(key==='lamp') soundLamp();
-  if(key==='ref') soundRef();
-  if(isOn){
-    card.classList.remove('on',color); pill.classList.remove('on'); sub.textContent = offTxt;
-    if(key==='lamp'){ count.lamp++; tgNotify('💡 Lâmpada Sala — Desligada'); }
-    if(key==='ref'){  count.ref++;  tgNotify('🔦 Refletores — Desligados'); }
-    localStorage.setItem('state_'+key, 'off');
-  } else {
-    card.classList.add('on',color); pill.classList.add('on'); sub.textContent = onTxt;
-    if(key==='lamp'){ count.lamp++; tgNotify('💡 Lâmpada Sala — Ligada'); }
-    if(key==='ref'){  count.ref++;  tgNotify('🔦 Refletores — 5 ligados'); }
-    localStorage.setItem('state_'+key, 'on');
-  }
-}
-
-async function toggleTV(){
-  soundTV();
-  tvOn = !tvOn;
-  const card = document.getElementById('d-tv');
-  const pill = document.getElementById('p-tv');
-  const sub  = document.getElementById('s-tv');
-  if(tvOn){ card.classList.add('on','cyan'); pill.classList.add('on'); sub.textContent = 'Ligada'; }
-  else { card.classList.remove('on','cyan'); pill.classList.remove('on'); sub.textContent = 'Desligada'; }
-  localStorage.setItem('tvOn', tvOn);
-  try {
-    await fetch('http://'+ROKU_IP+':8060/keypress/Power', {method:'POST', mode:'no-cors'});
-    toast(tvOn ? '📺 TV ligada!' : '📺 TV desligada!');
-    count.tv++;
-    tgNotify(tvOn ? '📺 Televisão — Ligada' : '📺 Televisão — Desligada');
-  } catch(e){ toast('⚠ Verifique o Wi-Fi', true); }
-}
-
-// POLLING ROKU — verifica estado real da TV a cada 5s
-function setTvState(on){
-  if(tvOn === on) return;
-  tvOn = on;
-  const card = document.getElementById('d-tv');
-  const pill = document.getElementById('p-tv');
-  const sub  = document.getElementById('s-tv');
-  if(on){ card.classList.add('on','cyan'); pill.classList.add('on'); sub.textContent = 'TV online'; }
-  else { card.classList.remove('on','cyan'); pill.classList.remove('on'); sub.textContent = 'TV offline'; }
-  localStorage.setItem('tvOn', on);
-}
-
-async function checkRoku(){
-  try {
-    const r = await fetch('http://'+ROKU_IP+':8060/query/active-app');
-    const txt = await r.text();
-    if(txt.includes('<app>')){ setTvState(true); }
-    else { setTvState(false); }
-  } catch(e){
-    setTvState(false);
-  }
-}
-setInterval(checkRoku, 5000);
-checkRoku();
-
-async function openMusic(){
-  soundMusic();
-  musicOpen = true;
-  const single = document.getElementById('music-single');
-  const split = document.getElementById('music-split');
-  if(single) single.style.display = 'none';
-  if(split) split.style.display = 'flex';
-  try {
-    await fetch('http://'+ROKU_IP+':8060/launch/837?contentId='+YOUTUBE_PLAYLIST+'&mediaType=video', {method:'POST', mode:'no-cors'});
-    setTimeout(()=>{ fetch('http://'+ROKU_IP+':8060/keypress/Play',{method:'POST',mode:'no-cors'}); }, 2000);
-    toast('🎶 YouTube aberto!');
-    count.music++;
-    tgNotify('🎶 Música — YouTube aberto no painel');
-  } catch(e){
-    toast('⚠ Verifique o Wi-Fi', true);
-  }
-}
-
-async function closeMusic(){
-  await fetch('http://'+ROKU_IP+':8060/keypress/Home', {method:'POST', mode:'no-cors'});
-  setTimeout(()=>{ fetch('http://'+ROKU_IP+':8060/keypress/InputTuner',{method:'POST',mode:'no-cors'}); }, 800);
-  musicOpen = false;
-  document.getElementById('music-single').style.display = 'flex';
-  document.getElementById('music-split').style.display = 'none';
-  document.getElementById('s-music').textContent = 'YouTube · Playlist';
-  toast('📺 Voltando para TV');
-}
-
-async function togglePlayer(){
-  soundPlay();
-  try {
-    await fetch('http://'+ROKU_IP+':8060/keypress/Play', {method:'POST', mode:'no-cors'});
-    toast('⏯ Play / Pause');
-  } catch(e){
-    toast('⚠ Falha no comando', true);
-  }
-}
-
-function toast(msg, isError=false){
-  const t = document.getElementById('toastEl');
-  t.textContent = msg;
-  t.className = 'toast' + (isError ? ' error' : '');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
-}
-
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('data:text/javascript;base64,'+btoa(
-    "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));" +
-    "self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));" +
-    "self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));"
-  )).catch(()=>{});
-}
-</script>
-</body>
-</html>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa("self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));")).catch(()=>{});}
+</script></body></html>
