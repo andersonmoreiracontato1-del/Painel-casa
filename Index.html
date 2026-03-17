@@ -91,9 +91,9 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 <div class="card" id="d-tv" onclick="tTV()">
 <div class="ct"><div class="ic">📺</div><div class="pill c" id="pl-tv"></div></div>
 <div class="cn">Televisão</div><div class="cs" id="s-tv">Desligada</div></div>
-<div class="card p" id="d-radio" onclick="tRadio()">
-<div class="ct"><div class="ic">📻</div><div class="pill p" id="pl-radio"></div></div>
-<div class="cn">Clube FM</div><div class="cs" id="s-radio">99.1 · Recife</div></div>
+<div class="card p" id="d-oracao" onclick="tOracao()">
+<div class="ct"><div class="ic">🙏</div><div class="pill p" id="pl-oracao"></div></div>
+<div class="cn">Oração</div><div class="cs" id="s-oracao">YouTube</div></div>
 </div></div></div>
 
 <!-- TELA 2 — MÚSICAS -->
@@ -211,14 +211,14 @@ async function tTV(){sTV();tvOn=!tvOn;const c=document.getElementById('d-tv'),p=
 function stv(on){if(tvOn===on)return;tvOn=on;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(on){c.classList.add('on','c');p.classList.add('on');s.textContent='TV online';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='TV offline';}localStorage.setItem('tvOn',on);}
 async function cRK(){try{const r=await fetch('http://'+RK+':8060/query/active-app');stv((await r.text()).includes('<app>'));}catch(e){stv(false);}}
 setInterval(cRK,5000);cRK();
-let radioOn=false;
-async function tRadio(){
-  radioOn=!radioOn;
-  const c=document.getElementById('d-radio'),p=document.getElementById('pl-radio'),s=document.getElementById('s-radio');
-  if(radioOn){c.classList.add('on','p');p.classList.add('on');s.textContent='Tocando...';
-    try{await fetch('http://'+RK+':8060/launch/1453?contentId=s107843&mediaType=audio',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Select',{method:'POST',mode:'no-cors'}),2000);setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),3000);toast('📻 Clube FM na TV!');}catch(e){toast('⚠ Wi-Fi?',true);}
-  }else{c.classList.remove('on','p');p.classList.remove('on');s.textContent='99.1 · Recife';
-    try{await fetch('http://'+RK+':8060/keypress/Home',{method:'POST',mode:'no-cors'});toast('📻 Rádio parada');}catch(e){toast('⚠ Wi-Fi?',true);}
+let oracaoOn=false;
+async function tOracao(){
+  oracaoOn=!oracaoOn;
+  const c=document.getElementById('d-oracao'),p=document.getElementById('pl-oracao'),s=document.getElementById('s-oracao');
+  if(oracaoOn){c.classList.add('on','p');p.classList.add('on');s.textContent='Tocando...';
+    try{await fetch('http://'+RK+':8060/launch/837?contentId=mbYX71gieqA&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast('🙏 Oração na TV!');}catch(e){toast('⚠ Wi-Fi?',true);}
+  }else{c.classList.remove('on','p');p.classList.remove('on');s.textContent='YouTube';
+    try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});toast('⏹ Voltando TV');}catch(e){toast('⚠ Wi-Fi?',true);}
   }
 }
 async function tPl(){sPl();try{await fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'});toast('⏯ Play/Pause');}catch(e){toast('⚠ Falha',true);}}
@@ -230,8 +230,8 @@ async function tMus(id){
     document.getElementById('msd-'+id).textContent='CD Completo';
     document.getElementById('mpp-'+id).style.display='none';
     curM=null;
-    try{await fetch('http://'+RK+':8060/keypress/Home',{method:'POST',mode:'no-cors'});}catch(e){}
-    toast('⏹ Parado');
+    try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});}catch(e){}
+    toast('⏹ Voltando TV');
     return;
   }
   // reseta anterior se existir
