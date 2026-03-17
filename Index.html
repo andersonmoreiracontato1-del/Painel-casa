@@ -59,20 +59,21 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans',sans-seri
 .sb.c::before{background:radial-gradient(ellipse at left center,var(--cg) 0%,transparent 70%);opacity:1;}
 .sb.p{border-color:rgba(167,139,250,.3);box-shadow:0 0 30px var(--pg),inset 0 0 20px rgba(167,139,250,.05);}
 .sb.p::before{background:radial-gradient(ellipse at left center,var(--pg) 0%,transparent 70%);opacity:1;}
-.si{font-size:32px;flex-shrink:0;}.sif{display:flex;flex-direction:column;flex:1;}
+.si{font-size:32px;flex-shrink:0;}
+.sif{display:flex;flex-direction:column;flex:1;}
 .sn{font-size:8vw;font-weight:800;text-transform:uppercase;line-height:1.1;}
 .sd{font-family:var(--mono);font-size:3.5vw;font-weight:600;opacity:.7;margin-top:4px;text-transform:uppercase;letter-spacing:.05em;}
 .sb.a .sn{color:var(--amber);}.sb.g .sn{color:var(--green);}.sb.c .sn{color:var(--cyan);}.sb.p .sn{color:var(--purple);}
 .sb.a .sd{color:var(--amber);opacity:.8;}.sb.g .sd{color:var(--green);opacity:.8;}.sb.c .sd{color:var(--cyan);opacity:.8;}.sb.p .sd{color:var(--purple);opacity:.8;}
-.sctrl{display:flex;gap:8px;margin-top:6px;}
-.sctrl button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;font-size:18px;padding:4px 12px;cursor:pointer;transition:background .2s;}
-.sctrl button:active{background:rgba(255,255,255,.2);}
+.ppc{display:none;margin-top:8px;}
+.ppb{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:20px;padding:5px 16px;cursor:pointer;transition:background .2s;}
+.ppb:active{background:rgba(255,255,255,.25);}
 iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.fully-banner{display:none!important;}
 .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);border:1px solid rgba(57,224,122,.3);color:#39e07a;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:999;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}.toast.err{border-color:rgba(239,68,68,.3);color:#ef4444;}
 </style></head><body>
 
-<!-- TELA 1 -->
+<!-- TELA 1 — PRINCIPAL -->
 <div class="page" id="p1">
 <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
 <div class="hdr">
@@ -108,36 +109,162 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 <div class="ln"></div>
 <div class="sg">
 
-<div class="sb a" id="mb-forro" onclick="tMusic('forro')">
+<div class="sb a" id="mb-forro" onclick="tMus('forro')">
 <div class="si">🎵</div>
 <div class="sif">
 <div class="sn">Forró</div>
-<div class="sd" id="msd-forro">Playlist</div>
-<div class="sctrl" id="mctrl-forro" style="display:none;">
-<button onclick="event.stopPropagation();tPl()">⏯</button>
-<button onclick="event.stopPropagation();nxt()">⏭</button>
+<div class="sd" id="msd-forro">CD Completo</div>
+<div class="ppc" id="mpp-forro">
+<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
 </div>
 </div></div>
 
-<div class="sb g" id="mb-gospel" onclick="tMusic('gospel')">
+<div class="sb g" id="mb-gospel" onclick="tMus('gospel')">
 <div class="si">🙏</div>
 <div class="sif">
 <div class="sn">Gospel</div>
-<div class="sd" id="msd-gospel">Em breve</div>
+<div class="sd" id="msd-gospel">CD Completo</div>
+<div class="ppc" id="mpp-gospel">
+<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
+</div>
 </div></div>
 
-<div class="sb p" id="mb-pagode" onclick="tMusic('pagode')">
+<div class="sb p" id="mb-pagode" onclick="tMus('pagode')">
 <div class="si">🥁</div>
 <div class="sif">
 <div class="sn">Pagode</div>
-<div class="sd" id="msd-pagode">Em breve</div>
+<div class="sd" id="msd-pagode">CD Completo</div>
+<div class="ppc" id="mpp-pagode">
+<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
+</div>
 </div></div>
 
-<div class="sb c" id="mb-antigas" onclick="tMusic('antigas')">
+<div class="sb c" id="mb-antigas" onclick="tMus('antigas')">
 <div class="si">🎶</div>
 <div class="sif">
 <div class="sn">Antigas</div>
-<div class="sd" id="msd-antigas">Em breve</div>
+<div class="sd" id="msd-antigas">CD Completo</div>
+<div class="ppc" id="mpp-antigas">
+<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
+</div>
+</div></div>
+
+</div></div>
+
+<!-- TELA 3 — CENAS -->
+<div class="page" id="p3">
+<div class="hdr"><div class="sh">Cenas</div><div class="ss">Automação</div></div>
+<div class="ln"></div>
+<div class="sg">
+<div class="sb a" onclick="s1()"><div class="si">🌅</div><div class="sif"><div class="sn">Bom Dia</div><div class="sd">Em breve</div></div></div>
+<div class="sb p" onclick="s2()"><div class="si">🌙</div><div class="sif"><div class="sn">Boa Noite</div><div class="sd">Em breve</div></div></div>
+<div class="sb g" onclick="s3()"><div class="si">⚡</div><div class="sif"><div class="sn">Ligar Tudo</div><div class="sd">Em breve</div></div></div>
+<div class="sb c" onclick="s4()"><div class="si">🌑</div><div class="sif"><div class="sn">Desligar Tudo</div><div class="sd">Em breve</div></div></div>
+</div></div>
+
+<div class="toast" id="tst"></div>
+<script>
+const RK='192.168.0.125';
+const MV={forro:'cGsaoaGz8BE',gospel:'nmB-mJvNplU',pagode:'_Oh9vwb8QUA',antigas:'ktdvBhZMiC4'};
+const ML={forro:'🎵 Forró',gospel:'🙏 Gospel',pagode:'🥁 Pagode',antigas:'🎶 Antigas'};
+let tvOn=localStorage.getItem('tvOn')==='true';
+let curM=null;
+
+(function(){
+  if(tvOn){const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(c){c.classList.add('on','c');p.classList.add('on');s.textContent='Ligada';}}
+  [['lamp','a','Ligada'],['ref','g','5 ligados']].forEach(([k,cl,t])=>{
+    if(localStorage.getItem('st_'+k)==='on'){const c=document.getElementById('d-'+k),p=document.getElementById('pl-'+k),s=document.getElementById('s-'+k);if(c){c.classList.add('on',cl);p.classList.add('on');s.textContent=t;}}
+  });
+})();
+
+// SWIPE
+let cur=1,tx=0,ty=0,trk=false;
+const PG={1:document.getElementById('p1'),2:document.getElementById('p2'),3:document.getElementById('p3')};
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;trk=false;},{passive:true});
+document.addEventListener('touchmove',e=>{const dx=Math.abs(e.touches[0].clientX-tx),dy=Math.abs(e.touches[0].clientY-ty);if(!trk&&dx>dy&&dx>8)trk=true;},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!trk)return;
+  const dx=e.changedTouches[0].clientX-tx;
+  if(dx<-50&&cur<3)goTo(cur+1);
+  else if(dx>50&&cur>1)goTo(cur-1);
+  trk=false;
+});
+function goTo(n){
+  const pv=cur;cur=n;
+  if(pv===1)PG[1].classList.add('hide');else PG[pv].classList.remove('show');
+  if(n===1)PG[1].classList.remove('hide');else PG[n].classList.add('show');
+}
+
+// HOLD RELÓGIO
+let ht=null,hs=false;
+function sh(e){e.stopPropagation();if(hs)return;hs=true;const cl=document.getElementById('clk'),pr=document.getElementById('clkp');cl.classList.add('holding');pr.style.transition='none';pr.style.width='0%';pr.offsetWidth;pr.classList.add('anim');ht=setTimeout(xk,3000);}
+function ch(){if(!hs)return;hs=false;clearTimeout(ht);const cl=document.getElementById('clk'),pr=document.getElementById('clkp');cl.classList.remove('holding');pr.classList.remove('anim');pr.style.transition='width .2s ease';pr.style.width='0%';}
+function xk(){ch();toast('🔓 Saindo...');try{if(typeof fully!=='undefined')fully.exitKiosk();else toast('⚠ Fully não detectado',true);}catch(e){toast('⚠ Erro',true);}}
+
+// RELÓGIO
+function uc(){const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');const dy=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];const mo=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];document.getElementById('clk').firstChild.textContent=h+':'+m+':'+s;document.getElementById('wd').textContent=dy[n.getDay()];document.getElementById('dl').textContent=n.getDate()+' de '+mo[n.getMonth()]+' · Planalto';}
+uc();setInterval(uc,1000);
+
+// SONS
+const aC=new(window.AudioContext||window.webkitAudioContext)();
+function pN(f,d=.4,v=.5){const o=aC.createOscillator(),g=aC.createGain(),fl=aC.createBiquadFilter();o.connect(fl);fl.connect(g);g.connect(aC.destination);o.type='triangle';fl.type='lowpass';fl.frequency.value=2000;o.frequency.value=f;g.gain.setValueAtTime(v,aC.currentTime);g.gain.exponentialRampToValueAtTime(.001,aC.currentTime+d);o.start(aC.currentTime);o.stop(aC.currentTime+d);}
+function pC(fs,d=.5){fs.forEach(f=>pN(f,d,.35));}
+function sLamp(){pC([261.6,329.6,392],.6);}function sRef(){pC([392,493.9,587.3],.5);}function sTV(){pC([329.6,415.3,523.3],.5);}function sMus(){pC([440,554.4,659.3,880],.7);}function sPl(){pN(523.3,.2,.4);}
+
+// DISPOSITIVOS T1
+function tgl(k,cl,on,off){const c=document.getElementById('d-'+k),p=document.getElementById('pl-'+k),s=document.getElementById('s-'+k),isOn=c.classList.contains('on');if(k==='lamp')sLamp();if(k==='ref')sRef();if(isOn){c.classList.remove('on',cl);p.classList.remove('on');s.textContent=off;localStorage.setItem('st_'+k,'off');}else{c.classList.add('on',cl);p.classList.add('on');s.textContent=on;localStorage.setItem('st_'+k,'on');}}
+async function tTV(){sTV();tvOn=!tvOn;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(tvOn){c.classList.add('on','c');p.classList.add('on');s.textContent='Ligada';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='Desligada';}localStorage.setItem('tvOn',tvOn);try{await fetch('http://'+RK+':8060/keypress/Power',{method:'POST',mode:'no-cors'});toast(tvOn?'📺 TV ligada!':'📺 TV desligada!');}catch(e){toast('⚠ Wi-Fi?',true);}}
+function stv(on){if(tvOn===on)return;tvOn=on;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(on){c.classList.add('on','c');p.classList.add('on');s.textContent='TV online';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='TV offline';}localStorage.setItem('tvOn',on);}
+async function cRK(){try{const r=await fetch('http://'+RK+':8060/query/active-app');stv((await r.text()).includes('<app>'));}catch(e){stv(false);}}
+setInterval(cRK,5000);cRK();
+async function oMus(){sMus();document.getElementById('ms1').style.display='none';document.getElementById('ms2').style.display='flex';try{await fetch('http://'+RK+':8060/launch/837?contentId=PLO0b5EuCB_XFqNEhrJy76pLkx1OMpZtTM&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast('🎶 YouTube!');}catch(e){toast('⚠ Wi-Fi?',true);}}
+async function cMus(){await fetch('http://'+RK+':8060/keypress/Home',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/InputTuner',{method:'POST',mode:'no-cors'}),800);document.getElementById('ms1').style.display='flex';document.getElementById('ms2').style.display='none';document.getElementById('s-mus').textContent='YouTube';toast('📺 Voltando TV');}
+async function tPl(){sPl();try{await fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'});toast('⏯ Play/Pause');}catch(e){toast('⚠ Falha',true);}}
+
+// MÚSICAS T2
+async function tMus(id){
+  if(curM===id){
+    // mesmo botão — para e reseta
+    document.getElementById('msd-'+id).textContent='CD Completo';
+    document.getElementById('mpp-'+id).style.display='none';
+    curM=null;
+    try{await fetch('http://'+RK+':8060/keypress/Home',{method:'POST',mode:'no-cors'});}catch(e){}
+    toast('⏹ Parado');
+    return;
+  }
+  // reseta anterior se existir
+  if(curM){
+    document.getElementById('msd-'+curM).textContent='CD Completo';
+    document.getElementById('mpp-'+curM).style.display='none';
+  }
+  curM=id;
+  document.getElementById('msd-'+id).textContent='Tocando...';
+  document.getElementById('mpp-'+id).style.display='flex';
+  sMus();
+  try{
+    await fetch('http://'+RK+':8060/launch/837?contentId='+MV[id]+'&mediaType=video',{method:'POST',mode:'no-cors'});
+    setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);
+    toast(ML[id]+' na TV!');
+  }catch(e){toast('⚠ Wi-Fi?',true);}
+}
+
+// CENAS T3
+function s1(){toast('🌅 Bom dia! — configure em breve');}
+function s2(){toast('🌙 Boa noite! — configure em breve');}
+function s3(){toast('⚡ Ligar tudo — configure em breve');}
+function s4(){toast('🌑 Desligar tudo — configure em breve');}
+
+// FONTE
+function af(){document.querySelectorAll('.cn').forEach(el=>el.style.fontSize=(el.parentElement.offsetWidth/7)+'px');document.querySelectorAll('.cs').forEach(el=>el.style.fontSize=(el.parentElement.offsetWidth/10)+'px');}
+window.addEventListener('resize',af);af();
+
+// BATERIA
+async function mb(){if(!('getBattery' in navigator))return;const b=await navigator.getBattery();function v(){const p=Math.round(b.level*100);if(p<=20&&!b.charging)toast('🔋 Crítica! '+p+'%',true);else if(p<=30&&!b.charging)toast('🔋 Baixa '+p+'%',true);}b.addEventListener('levelchange',v);v();}
+mb();
+
+function toast(msg,e=false){const t=document.getElementById('tst');t.textContent=msg;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa("self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));")).catch(()=>{});}
+</script></body></html>
 </div></div>
 
 </div></div>
