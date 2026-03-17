@@ -216,7 +216,7 @@ async function tRadio(){
   radioOn=!radioOn;
   const c=document.getElementById('d-radio'),p=document.getElementById('pl-radio'),s=document.getElementById('s-radio');
   if(radioOn){c.classList.add('on','p');p.classList.add('on');s.textContent='Tocando...';
-    try{await fetch('http://'+RK+':8060/launch/2440?contentId=s107843&mediaType=audio',{method:'POST',mode:'no-cors'});toast('📻 Clube FM na TV!');}catch(e){toast('⚠ Wi-Fi?',true);}
+    try{await fetch('http://'+RK+':8060/launch/1453?contentId=s107843&mediaType=audio',{method:'POST',mode:'no-cors'});toast('📻 Clube FM na TV!');}catch(e){toast('⚠ Wi-Fi?',true);}
   }else{c.classList.remove('on','p');p.classList.remove('on');s.textContent='99.1 · Recife';
     try{await fetch('http://'+RK+':8060/keypress/Home',{method:'POST',mode:'no-cors'});toast('📻 Rádio parada');}catch(e){toast('⚠ Wi-Fi?',true);}
   }
