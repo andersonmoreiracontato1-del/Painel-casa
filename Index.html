@@ -91,9 +91,9 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 <div class="card" id="d-tv" onclick="tTV()">
 <div class="ct"><div class="ic">📺</div><div class="pill c" id="pl-tv"></div></div>
 <div class="cn">Televisão</div><div class="cs" id="s-tv">Desligada</div></div>
-<div class="card p" id="d-gemini" onclick="tGemini()">
-<div class="ct"><div class="ic">🎙️</div><div class="pill p" id="pl-gemini"></div></div>
-<div class="cn">Microfone</div><div class="cs" id="s-gemini">Falar...</div></div>
+<div class="card p" id="d-microfone" onclick="ativarMic()">
+<div class="ct"><div class="ic">🎤</div><div class="pill p" id="pl-oracao"></div></div>
+<div class="cn">Microfone</div><div class="cs" id="s-mic">Falar</div></div>
 </div></div></div>
 
 <!-- TELA 2 — MÚSICAS -->
@@ -268,96 +268,133 @@ mb();
 function toast(msg,e=false){const t=document.getElementById('tst');t.textContent=msg;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa("self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));")).catch(()=>{});}
 </script>
-<!-- GEMINI VOICE ASSISTANT -->
-<div id="gemini-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:9999;flex-direction:column;align-items:center;justify-content:center;">
-<div style="width:90%;max-width:400px;background:#111827;border-radius:24px;padding:24px;border:1px solid rgba(167,139,250,0.3);">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-<span style="font-size:1.2rem;font-weight:700;color:#a78bfa;">🎙️ Assistente</span>
-<button onclick="fecharGemini()" style="background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;">✕</button>
+<!-- GEMINI FLUTUANTE -->
+<div id="mic-overlay" onclick="pararMic()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9998;"></div>
+<div id="mic-flutuante" style="display:none;position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:9999;flex-direction:column;align-items:center;gap:12px;">
+<div style="background:rgba(17,24,39,0.97);border:1px solid rgba(167,139,250,0.5);border-radius:20px;padding:16px 24px;color:#a78bfa;font-size:1rem;font-weight:600;text-align:center;" id="mic-label">&#127908; Ouvindo...</div>
+<div id="mic-circle" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);box-shadow:0 0 40px rgba(167,139,250,0.8);display:flex;align-items:center;justify-content:center;font-size:32px;animation:pulse 1s infinite;">&#127908;</div>
 </div>
-<div id="gemini-chat" style="min-height:120px;max-height:300px;overflow-y:auto;margin-bottom:16px;font-size:0.95rem;line-height:1.5;"></div>
-<div style="display:flex;gap:8px;">
-<input id="gemini-input" type="text" placeholder="Digite ou fale..." style="flex:1;background:#1a2438;border:1px solid rgba(167,139,250,0.3);border-radius:12px;padding:10px 14px;color:#fff;font-size:1rem;outline:none;" onkeydown="if(event.key==='Enter')enviarGemini()"/>
-<button onclick="gravarVoz()" id="btn-mic" style="background:#a78bfa;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:1.2rem;">🎤</button>
-<button onclick="enviarGemini()" style="background:#a78bfa;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:1rem;font-weight:700;color:#000;">➤</button>
-</div>
-</div>
-</div>
+<style>
+@keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(167,139,250,0.8);}50%{box-shadow:0 0 70px rgba(167,139,250,1);}}
+</style>
 
 <script>
 const GEMINI_KEY = 'AIzaSyDjUA6zz8eCsqiOvxrK8B9nJV1VhVMprdQ';
-let geminiHistorico = [];
+const RK_IP = '192.168.0.125';
+let micAtivo = false;
 let reconhecimento = null;
 
-function tGemini(){
-  document.getElementById('gemini-modal').style.display='flex';
-  document.getElementById('gemini-input').focus();
-  if(geminiHistorico.length===0) adicionarMsg('assistente','Olá! Como posso ajudar? Você pode me pedir para ligar a TV, controlar a casa ou fazer qualquer pergunta. 😊');
+const ROKU_CMDS = {
+  'volume mais':'VolumeUp','aumentar volume':'VolumeUp','sobe volume':'VolumeUp','mais volume':'VolumeUp',
+  'volume menos':'VolumeDown','diminuir volume':'VolumeDown','desce volume':'VolumeDown','menos volume':'VolumeDown',
+  'mudo':'VolumeMute','mutar':'VolumeMute','silenciar':'VolumeMute','sem som':'VolumeMute',
+  'play':'Play','pause':'Play','pausar':'Play','continuar':'Play','reproduzir':'Play',
+  'voltar':'Back','retroceder':'Rev','avançar':'Fwd',
+  'home':'Home','início':'Home','tela inicial':'Home',
+  'cima':'Up','para cima':'Up','baixo':'Down','para baixo':'Down',
+  'esquerda':'Left','direita':'Right',
+  'ok':'Select','selecionar':'Select','confirmar':'Select',
+  'canal mais':'ChannelUp','canal menos':'ChannelDown',
+};
+
+function mostrarFlutuante(msg){
+  document.getElementById('mic-label').innerHTML = msg;
+  document.getElementById('mic-flutuante').style.display = 'flex';
+  document.getElementById('mic-overlay').style.display = 'block';
 }
 
-function fecharGemini(){
-  document.getElementById('gemini-modal').style.display='none';
+function esconderFlutuante(){
+  document.getElementById('mic-flutuante').style.display = 'none';
+  document.getElementById('mic-overlay').style.display = 'none';
+  document.getElementById('s-mic').textContent = 'Falar';
 }
 
-function adicionarMsg(tipo, texto){
-  const chat = document.getElementById('gemini-chat');
-  const cor = tipo==='usuario' ? '#a78bfa' : '#4ade80';
-  const nome = tipo==='usuario' ? 'Você' : 'Gemini';
-  chat.innerHTML += '<div style="margin-bottom:10px;"><span style="color:'+cor+';font-weight:700;">'+nome+':</span> <span style="color:#fff;">'+texto+'</span></div>';
-  chat.scrollTop = chat.scrollHeight;
+function falarResposta(texto){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = 'pt-BR';
+    u.rate = 1.05;
+    window.speechSynthesis.speak(u);
+    u.onend = () => esconderFlutuante();
+  } else {
+    setTimeout(esconderFlutuante, 1500);
+  }
 }
 
-async function enviarGemini(){
-  const input = document.getElementById('gemini-input');
-  const texto = input.value.trim();
-  if(!texto) return;
-  input.value = '';
-  adicionarMsg('usuario', texto);
-  
-  // Verifica comandos da casa
-  const t = texto.toLowerCase();
-  if(t.includes('liga') && t.includes('tv')){ await fetch(SRV+'/tv/power'); adicionarMsg('assistente','TV ligada! 📺'); return; }
-  if(t.includes('desliga') && t.includes('tv')){ await fetch(SRV+'/tv/power'); adicionarMsg('assistente','TV desligada! 📺'); return; }
-  
-  // Chama API Gemini
-  adicionarMsg('assistente','...');
+async function executarRoku(key){
+  try { await fetch('http://'+RK_IP+':8060/keypress/'+key,{method:'POST',mode:'no-cors'}); } catch(e){}
+}
+
+async function processarComando(texto){
+  const t = texto.toLowerCase().trim();
+  mostrarFlutuante('&#9889; ' + texto);
+
+  if((t.includes('liga')||t.includes('ligar'))&&t.includes('tv')){
+    await fetch(SRV+'/tv/power');
+    falarResposta('TV ligada'); return;
+  }
+  if((t.includes('desliga')||t.includes('desligar'))&&t.includes('tv')){
+    await fetch(SRV+'/tv/power');
+    falarResposta('TV desligada'); return;
+  }
+
+  for(const [cmd,key] of Object.entries(ROKU_CMDS)){
+    if(t.includes(cmd)){ await executarRoku(key); falarResposta('Feito'); return; }
+  }
+
+  const volNum = t.match(/volume\s*(\d+)/);
+  if(volNum){
+    const n = parseInt(volNum[1]);
+    for(let i=0;i<Math.min(n,30);i++) await executarRoku('VolumeUp');
+    falarResposta('Volume ajustado'); return;
+  }
+
   try {
-    geminiHistorico.push({role:'user',parts:[{text:texto}]});
-    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        system_instruction:{parts:[{text:'Você é um assistente de casa inteligente. Responda em português, de forma curta e direta. Você controla: TV Roku (liga/desliga), e em breve relés de luz.'}]},
-        contents: geminiHistorico
+    mostrarFlutuante('&#129504; Pensando...');
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        contents:[{role:'user',parts:[{text:texto}]}],
+        system_instruction:{parts:[{text:'Você é um assistente de casa inteligente. Responda em português brasileiro, de forma curta e natural como se estivesse falando. Máximo 2 frases.'}]}
       })
     });
     const data = await res.json();
     const resposta = data.candidates[0].content.parts[0].text;
-    geminiHistorico.push({role:'model',parts:[{text:resposta}]});
-    // Remove o ...
-    const chat = document.getElementById('gemini-chat');
-    chat.innerHTML = chat.innerHTML.replace('<div style="margin-bottom:10px;"><span style="color:#4ade80;font-weight:700;">Gemini:</span> <span style="color:#fff;">...</span></div>','');
-    adicionarMsg('assistente', resposta);
-  } catch(e) {
-    adicionarMsg('assistente','Erro ao conectar. Verifique a internet. ⚠️');
+    falarResposta(resposta);
+  } catch(e){
+    falarResposta('Não consegui processar. Tente novamente.');
   }
 }
 
-function gravarVoz(){
-  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
-    toast('Voz não suportada neste navegador',true); return;
+function pararMic(){
+  if(reconhecimento) reconhecimento.stop();
+  micAtivo = false;
+  esconderFlutuante();
+}
+
+function ativarMic(){
+  if(micAtivo){ pararMic(); return; }
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+    falarResposta('Reconhecimento de voz não suportado'); return;
   }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
   reconhecimento = new SR();
   reconhecimento.lang = 'pt-BR';
+  reconhecimento.continuous = false;
   reconhecimento.interimResults = false;
-  document.getElementById('btn-mic').textContent = '🔴';
-  reconhecimento.onresult = (e) => {
-    document.getElementById('gemini-input').value = e.results[0][0].transcript;
-    document.getElementById('btn-mic').textContent = '🎤';
-    enviarGemini();
+  reconhecimento.onstart = () => {
+    micAtivo = true;
+    document.getElementById('s-mic').textContent = 'Ouvindo...';
+    mostrarFlutuante('&#127908; Ouvindo...');
   };
-  reconhecimento.onerror = () => { document.getElementById('btn-mic').textContent = '🎤'; };
+  reconhecimento.onresult = (e) => {
+    const texto = e.results[0][0].transcript;
+    micAtivo = false;
+    processarComando(texto);
+  };
+  reconhecimento.onerror = () => { pararMic(); };
+  reconhecimento.onend = () => { if(micAtivo) pararMic(); };
   reconhecimento.start();
 }
 </script>
