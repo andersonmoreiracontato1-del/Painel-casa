@@ -91,9 +91,9 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 <div class="card" id="d-tv" onclick="tTV()">
 <div class="ct"><div class="ic">📺</div><div class="pill c" id="pl-tv"></div></div>
 <div class="cn">Televisão</div><div class="cs" id="s-tv">Desligada</div></div>
-<div class="card p" id="d-oracao" onclick="tOracao()">
-<div class="ct"><div class="ic">🙏</div><div class="pill p" id="pl-oracao"></div></div>
-<div class="cn">Oração</div><div class="cs" id="s-oracao">YouTube</div></div>
+<div class="card p" id="d-gemini" onclick="tGemini()">
+<div class="ct"><div class="ic">🎙️</div><div class="pill p" id="pl-gemini"></div></div>
+<div class="cn">Microfone</div><div class="cs" id="s-gemini">Falar...</div></div>
 </div></div></div>
 
 <!-- TELA 2 — MÚSICAS -->
@@ -267,4 +267,98 @@ mb();
 
 function toast(msg,e=false){const t=document.getElementById('tst');t.textContent=msg;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa("self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));")).catch(()=>{});}
-</script></body></html>
+</script>
+<!-- GEMINI VOICE ASSISTANT -->
+<div id="gemini-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:9999;flex-direction:column;align-items:center;justify-content:center;">
+<div style="width:90%;max-width:400px;background:#111827;border-radius:24px;padding:24px;border:1px solid rgba(167,139,250,0.3);">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+<span style="font-size:1.2rem;font-weight:700;color:#a78bfa;">🎙️ Assistente</span>
+<button onclick="fecharGemini()" style="background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;">✕</button>
+</div>
+<div id="gemini-chat" style="min-height:120px;max-height:300px;overflow-y:auto;margin-bottom:16px;font-size:0.95rem;line-height:1.5;"></div>
+<div style="display:flex;gap:8px;">
+<input id="gemini-input" type="text" placeholder="Digite ou fale..." style="flex:1;background:#1a2438;border:1px solid rgba(167,139,250,0.3);border-radius:12px;padding:10px 14px;color:#fff;font-size:1rem;outline:none;" onkeydown="if(event.key==='Enter')enviarGemini()"/>
+<button onclick="gravarVoz()" id="btn-mic" style="background:#a78bfa;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:1.2rem;">🎤</button>
+<button onclick="enviarGemini()" style="background:#a78bfa;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:1rem;font-weight:700;color:#000;">➤</button>
+</div>
+</div>
+</div>
+
+<script>
+const GEMINI_KEY = 'AIzaSyDjUA6zz8eCsqiOvxrK8B9nJV1VhVMprdQ';
+let geminiHistorico = [];
+let reconhecimento = null;
+
+function tGemini(){
+  document.getElementById('gemini-modal').style.display='flex';
+  document.getElementById('gemini-input').focus();
+  if(geminiHistorico.length===0) adicionarMsg('assistente','Olá! Como posso ajudar? Você pode me pedir para ligar a TV, controlar a casa ou fazer qualquer pergunta. 😊');
+}
+
+function fecharGemini(){
+  document.getElementById('gemini-modal').style.display='none';
+}
+
+function adicionarMsg(tipo, texto){
+  const chat = document.getElementById('gemini-chat');
+  const cor = tipo==='usuario' ? '#a78bfa' : '#4ade80';
+  const nome = tipo==='usuario' ? 'Você' : 'Gemini';
+  chat.innerHTML += '<div style="margin-bottom:10px;"><span style="color:'+cor+';font-weight:700;">'+nome+':</span> <span style="color:#fff;">'+texto+'</span></div>';
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function enviarGemini(){
+  const input = document.getElementById('gemini-input');
+  const texto = input.value.trim();
+  if(!texto) return;
+  input.value = '';
+  adicionarMsg('usuario', texto);
+  
+  // Verifica comandos da casa
+  const t = texto.toLowerCase();
+  if(t.includes('liga') && t.includes('tv')){ await fetch(SRV+'/tv/power'); adicionarMsg('assistente','TV ligada! 📺'); return; }
+  if(t.includes('desliga') && t.includes('tv')){ await fetch(SRV+'/tv/power'); adicionarMsg('assistente','TV desligada! 📺'); return; }
+  
+  // Chama API Gemini
+  adicionarMsg('assistente','...');
+  try {
+    geminiHistorico.push({role:'user',parts:[{text:texto}]});
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction:{parts:[{text:'Você é um assistente de casa inteligente. Responda em português, de forma curta e direta. Você controla: TV Roku (liga/desliga), e em breve relés de luz.'}]},
+        contents: geminiHistorico
+      })
+    });
+    const data = await res.json();
+    const resposta = data.candidates[0].content.parts[0].text;
+    geminiHistorico.push({role:'model',parts:[{text:resposta}]});
+    // Remove o ...
+    const chat = document.getElementById('gemini-chat');
+    chat.innerHTML = chat.innerHTML.replace('<div style="margin-bottom:10px;"><span style="color:#4ade80;font-weight:700;">Gemini:</span> <span style="color:#fff;">...</span></div>','');
+    adicionarMsg('assistente', resposta);
+  } catch(e) {
+    adicionarMsg('assistente','Erro ao conectar. Verifique a internet. ⚠️');
+  }
+}
+
+function gravarVoz(){
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
+    toast('Voz não suportada neste navegador',true); return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  reconhecimento = new SR();
+  reconhecimento.lang = 'pt-BR';
+  reconhecimento.interimResults = false;
+  document.getElementById('btn-mic').textContent = '🔴';
+  reconhecimento.onresult = (e) => {
+    document.getElementById('gemini-input').value = e.results[0][0].transcript;
+    document.getElementById('btn-mic').textContent = '🎤';
+    enviarGemini();
+  };
+  reconhecimento.onerror = () => { document.getElementById('btn-mic').textContent = '🎤'; };
+  reconhecimento.start();
+}
+</script>
+</body></html>
