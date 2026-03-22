@@ -91,9 +91,9 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 <div class="card" id="d-tv" onclick="tTV()">
 <div class="ct"><div class="ic">📺</div><div class="pill c" id="pl-tv"></div></div>
 <div class="cn">Televisão</div><div class="cs" id="s-tv">Desligada</div></div>
-<div class="card p" id="d-mic" onclick="ativarMic()">
-<div class="ct"><div class="ic">🎤</div><div class="pill p" id="pl-mic"></div></div>
-<div class="cn">Microfone</div><div class="cs" id="s-mic">Falar</div></div>
+<div class="card p" id="d-oracao" onclick="tOracao()">
+<div class="ct"><div class="ic">🙏</div><div class="pill p" id="pl-oracao"></div></div>
+<div class="cn">Oração</div><div class="cs" id="s-oracao">YouTube</div></div>
 </div></div></div>
 
 <!-- TELA 2 — MÚSICAS -->
@@ -267,126 +267,4 @@ mb();
 
 function toast(msg,e=false){const t=document.getElementById('tst');t.textContent=msg;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa("self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));")).catch(()=>{});}
-</script>
-<!-- GEMINI FLUTUANTE -->
-<div id="mic-overlay" onclick="pararMic()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9998;"></div>
-<div id="mic-flutuante" style="display:none;position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:9999;flex-direction:column;align-items:center;gap:12px;">
-<div style="background:rgba(17,24,39,0.97);border:1px solid rgba(167,139,250,0.5);border-radius:20px;padding:16px 24px;color:#a78bfa;font-size:1rem;font-weight:600;text-align:center;" id="mic-label">&#127908; Ouvindo...</div>
-<div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);box-shadow:0 0 40px rgba(167,139,250,0.8);display:flex;align-items:center;justify-content:center;font-size:32px;animation:pulse-mic 1s infinite;">&#127908;</div>
-</div>
-<style>@keyframes pulse-mic{0%,100%{box-shadow:0 0 40px rgba(167,139,250,0.8);}50%{box-shadow:0 0 70px rgba(167,139,250,1);}}</style>
-
-<script>
-const GEMINI_KEY = 'AIzaSyDjUA6zz8eCsqiOvxrK8B9nJV1VhVMprdQ';
-const RK_IP = '192.168.0.125';
-let micAtivo = false;
-let reconhecimento = null;
-
-const SYSTEM_PROMPT = `Você é um assistente de casa inteligente. Interprete livremente o que o usuário disse e responda APENAS com JSON:
-{"acao": "NOME_DA_ACAO", "vezes": 1, "resposta": "texto curto para falar em voz alta"}
-
-Ações disponíveis:
-TV_POWER, VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE, PLAY_PAUSE, BACK, HOME, UP, DOWN, LEFT, RIGHT, SELECT, CHANNEL_UP, CHANNEL_DOWN, FORWARD, REWIND, NONE
-
-Use NONE para perguntas gerais e responda normalmente.
-Para volume, use "vezes" para indicar intensidade (ex: "bem alto" = vezes:5).
-Responda APENAS o JSON sem markdown.`;
-
-async function executarRoku(key, vezes){
-  vezes = vezes||1;
-  for(let i=0;i<Math.min(vezes,20);i++){
-    try{await fetch('http://'+RK_IP+':8060/keypress/'+key,{method:'POST',mode:'no-cors'});}catch(e){}
-    if(vezes>1) await new Promise(r=>setTimeout(r,200));
-  }
-}
-
-const ACOES = {
-  TV_POWER:()=>fetch(SRV+'/tv/power'),
-  VOLUME_UP:(v)=>executarRoku('VolumeUp',v),
-  VOLUME_DOWN:(v)=>executarRoku('VolumeDown',v),
-  VOLUME_MUTE:()=>executarRoku('VolumeMute'),
-  PLAY_PAUSE:()=>executarRoku('Play'),
-  BACK:()=>executarRoku('Back'),
-  HOME:()=>executarRoku('Home'),
-  UP:()=>executarRoku('Up'),
-  DOWN:()=>executarRoku('Down'),
-  LEFT:()=>executarRoku('Left'),
-  RIGHT:()=>executarRoku('Right'),
-  SELECT:()=>executarRoku('Select'),
-  CHANNEL_UP:()=>executarRoku('ChannelUp'),
-  CHANNEL_DOWN:()=>executarRoku('ChannelDown'),
-  FORWARD:()=>executarRoku('Fwd'),
-  REWIND:()=>executarRoku('Rev'),
-};
-
-function mostrarFlutuante(msg){
-  document.getElementById('mic-label').innerHTML=msg;
-  document.getElementById('mic-flutuante').style.display='flex';
-  document.getElementById('mic-overlay').style.display='block';
-}
-
-function esconderFlutuante(){
-  document.getElementById('mic-flutuante').style.display='none';
-  document.getElementById('mic-overlay').style.display='none';
-  document.getElementById('s-mic').textContent='Falar';
-}
-
-function falarResposta(texto){
-  if('speechSynthesis' in window){
-    window.speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(texto);
-    u.lang='pt-BR';u.rate=1.05;
-    u.onend=()=>esconderFlutuante();
-    window.speechSynthesis.speak(u);
-  } else { setTimeout(esconderFlutuante,1500); }
-}
-
-async function processarComando(texto){
-  mostrarFlutuante('&#129504; Processando...');
-  try{
-    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[{role:'user',parts:[{text:texto}]}],
-        system_instruction:{parts:[{text:SYSTEM_PROMPT}]}
-      })
-    });
-    const data=await res.json();
-    let raw=data.candidates[0].content.parts[0].text.trim().replace(/```json|```/g,'').trim();
-    const cmd=JSON.parse(raw);
-    if(cmd.acao&&cmd.acao!=='NONE'&&ACOES[cmd.acao]) await ACOES[cmd.acao](cmd.vezes||1);
-    falarResposta(cmd.resposta||'Feito');
-  }catch(e){ falarResposta('Não entendi, tente novamente.'); }
-}
-
-function pararMic(){
-  if(reconhecimento) reconhecimento.stop();
-  micAtivo=false; esconderFlutuante();
-}
-
-function ativarMic(){
-  if(micAtivo){pararMic();return;}
-  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
-    alert('Reconhecimento de voz não suportado'); return;
-  }
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  reconhecimento=new SR();
-  reconhecimento.lang='pt-BR';
-  reconhecimento.continuous=false;
-  reconhecimento.interimResults=false;
-  reconhecimento.onstart=()=>{
-    micAtivo=true;
-    document.getElementById('s-mic').textContent='Ouvindo...';
-    mostrarFlutuante('&#127908; Ouvindo...');
-  };
-  reconhecimento.onresult=(e)=>{
-    const texto=e.results[0][0].transcript;
-    micAtivo=false;
-    processarComando(texto);
-  };
-  reconhecimento.onerror=()=>{pararMic();};
-  reconhecimento.onend=()=>{if(micAtivo)pararMic();};
-  reconhecimento.start();
-}
-</script>
-</body></html>
+</script></body></html>
