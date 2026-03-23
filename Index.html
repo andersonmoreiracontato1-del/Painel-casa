@@ -86,13 +86,16 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
     <div class="scr-bottom">
       <div class="scr-date" id="scr-date">--/--/---- · -------</div>
     </div>
+    <div class="scr-bottom" style="margin-top:10px;">
+      <div class="scr-date" id="scr-weather">⏳ --°C · Carregando...</div>
+    </div>
   </div>
 </div>
 
 <!-- TELA 1 — PRINCIPAL -->
 <div class="page" id="p1">
 <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
-<div class="ln" style="margin-top:8px;margin-bottom:18px;"></div>
+<div class="ln" style="margin-top:8px;margin-bottom:12px;"></div>
 <div class="gw"><div class="gr">
 <div class="card a" id="d-lamp" onclick="tgl('lamp','a','Ligada','Desligada')">
 <div class="ct"><div class="ic">💡</div><div class="pill a" id="pl-lamp"></div></div>
@@ -242,7 +245,26 @@ function hideSCR(){
 document.addEventListener('touchstart',()=>{hideSCR();},{passive:true});
 resetSCR();
 
-// SONS
+// CLIMA — Open-Meteo (sem chave, grátis)
+const WC={0:'☀️ Céu limpo',1:'🌤️ Principalmente limpo',2:'⛅ Parcialmente nublado',3:'☁️ Nublado',45:'🌫️ Névoa',48:'🌫️ Névoa',51:'🌦️ Garoa leve',53:'🌦️ Garoa',55:'🌧️ Garoa forte',61:'🌧️ Chuva leve',63:'🌧️ Chuva',65:'🌧️ Chuva forte',71:'🌨️ Neve leve',73:'🌨️ Neve',75:'🌨️ Neve forte',80:'🌦️ Pancadas leves',81:'⛈️ Pancadas',82:'⛈️ Pancadas fortes',95:'⛈️ Tempestade',96:'⛈️ Tempestade c/ granizo',99:'⛈️ Tempestade forte'};
+async function loadWeather(){
+  try{
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=-7.9&longitude=-34.9&current=temperature_2m,weathercode&temperature_unit=celsius&timezone=America/Recife');
+    const d=await r.json();
+    const temp=Math.round(d.current.temperature_2m);
+    const code=d.current.weathercode;
+    const desc=WC[code]||'🌡️ Tempo variável';
+    const parts=desc.split(' ');
+    const ico=parts[0];
+    const txt=parts.slice(1).join(' ');
+    document.getElementById('scr-weather').textContent=ico+' '+temp+'°C · '+txt;
+  }catch(e){
+    document.getElementById('wdesc').textContent='Sem conexão';
+    document.getElementById('scr-weather').textContent='Sem conexão';
+  }
+}
+loadWeather();
+setInterval(loadWeather,10*60*1000); // atualiza a cada 10 min
 const aC=new(window.AudioContext||window.webkitAudioContext)();
 function pN(f,d=.4,v=.5){const o=aC.createOscillator(),g=aC.createGain(),fl=aC.createBiquadFilter();o.connect(fl);fl.connect(g);g.connect(aC.destination);o.type='triangle';fl.type='lowpass';fl.frequency.value=2000;o.frequency.value=f;g.gain.setValueAtTime(v,aC.currentTime);g.gain.exponentialRampToValueAtTime(.001,aC.currentTime+d);o.start(aC.currentTime);o.stop(aC.currentTime+d);}
 function pC(fs,d=.5){fs.forEach(f=>pN(f,d,.35));}
