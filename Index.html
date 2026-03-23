@@ -11,14 +11,13 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans',sans-seri
 .hint svg{width:22px;height:22px;display:block;}
 .hdr{width:100%;margin-bottom:18px;}
 .ln{width:100%;height:1px;background:var(--border);margin-bottom:18px;}
-/* SCREENSAVER */
 #scr{position:fixed;inset:0;z-index:100;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .8s ease;}
 #scr.active{opacity:1;pointer-events:all;}
 .scr-wrap{display:flex;flex-direction:column;align-items:center;width:100%;}
 .scr-h,.scr-m{font-family:'DM Sans',sans-serif;font-weight:800;font-size:63vw;line-height:.92;letter-spacing:-3px;color:#fff;text-align:center;width:100%;display:block;}
 .scr-bottom{display:flex;justify-content:center;width:100%;margin-top:20px;}
 .scr-date{font-family:'DM Sans',sans-serif;font-size:9vw;font-weight:700;color:#fff;letter-spacing:.06em;text-align:center;}
-#block-overlay{position:fixed;inset:0;z-index:99;display:none;}
+#block-overlay{position:fixed;inset:0;z-index:50;display:none;}
 #block-overlay.active{display:block;}
 .gw{display:flex;flex-direction:column;width:100%;flex:1;gap:12px;min-height:0;max-height:calc(100vh - 60px);}
 .gr{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;width:100%;flex:1;min-height:0;}
@@ -78,21 +77,15 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 
 <div id="block-overlay"></div>
 
-<!-- SCREENSAVER -->
-<div id="scr" onclick="hideSCR()">
+<div id="scr">
   <div class="scr-wrap">
     <div class="scr-h" id="scr-h">00</div>
     <div class="scr-m" id="scr-m">00</div>
-    <div class="scr-bottom">
-      <div class="scr-date" id="scr-date">--/--/---- · -------</div>
-    </div>
-    <div class="scr-bottom" style="margin-top:10px;">
-      <div class="scr-date" id="scr-weather">⏳ --°C · Carregando...</div>
-    </div>
+    <div class="scr-bottom"><div class="scr-date" id="scr-date">--/--/---- · -------</div></div>
+    <div class="scr-bottom" style="margin-top:10px;"><div class="scr-date" id="scr-weather">⏳ --°C · Carregando...</div></div>
   </div>
 </div>
 
-<!-- TELA 1 — PRINCIPAL -->
 <div class="page" id="p1">
 <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
 <div class="ln" style="margin-top:8px;margin-bottom:12px;"></div>
@@ -111,56 +104,17 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 <div class="cn">Oração</div><div class="cs" id="s-oracao">YouTube</div></div>
 </div></div></div>
 
-<!-- TELA 2 — MÚSICAS -->
 <div class="page" id="p2">
 <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
 <div class="hdr"><div class="sh">Músicas</div><div class="ss">Toque para tocar na TV</div></div>
 <div class="ln"></div>
 <div class="sg">
-
-<div class="sb a" id="mb-forro" onclick="tMus('forro')">
-<div class="si">🎵</div>
-<div class="sif">
-<div class="sn">Forró</div>
-<div class="sd" id="msd-forro">CD Completo</div>
-<div class="ppc" id="mpp-forro">
-<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
-</div>
+<div class="sb a" id="mb-forro" onclick="tMus('forro')"><div class="si">🎵</div><div class="sif"><div class="sn">Forró</div><div class="sd" id="msd-forro">CD Completo</div><div class="ppc" id="mpp-forro"><button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button></div></div></div>
+<div class="sb g" id="mb-gospel" onclick="tMus('gospel')"><div class="si">🙏</div><div class="sif"><div class="sn">Gospel</div><div class="sd" id="msd-gospel">CD Completo</div><div class="ppc" id="mpp-gospel"><button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button></div></div></div>
+<div class="sb p" id="mb-pagode" onclick="tMus('pagode')"><div class="si">🥁</div><div class="sif"><div class="sn">Pagode</div><div class="sd" id="msd-pagode">CD Completo</div><div class="ppc" id="mpp-pagode"><button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button></div></div></div>
+<div class="sb c" id="mb-antigas" onclick="tMus('antigas')"><div class="si">🎶</div><div class="sif"><div class="sn">Antigas</div><div class="sd" id="msd-antigas">CD Completo</div><div class="ppc" id="mpp-antigas"><button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button></div></div></div>
 </div></div>
 
-<div class="sb g" id="mb-gospel" onclick="tMus('gospel')">
-<div class="si">🙏</div>
-<div class="sif">
-<div class="sn">Gospel</div>
-<div class="sd" id="msd-gospel">CD Completo</div>
-<div class="ppc" id="mpp-gospel">
-<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
-</div>
-</div></div>
-
-<div class="sb p" id="mb-pagode" onclick="tMus('pagode')">
-<div class="si">🥁</div>
-<div class="sif">
-<div class="sn">Pagode</div>
-<div class="sd" id="msd-pagode">CD Completo</div>
-<div class="ppc" id="mpp-pagode">
-<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
-</div>
-</div></div>
-
-<div class="sb c" id="mb-antigas" onclick="tMus('antigas')">
-<div class="si">🎶</div>
-<div class="sif">
-<div class="sn">Antigas</div>
-<div class="sd" id="msd-antigas">CD Completo</div>
-<div class="ppc" id="mpp-antigas">
-<button class="ppb" onclick="event.stopPropagation();tPl()">⏯</button>
-</div>
-</div></div>
-
-</div></div>
-
-<!-- TELA 3 — CENAS -->
 <div class="page" id="p3">
 <div class="hdr"><div class="sh">Cenas</div><div class="ss">Automação</div></div>
 <div class="ln"></div>
@@ -190,10 +144,17 @@ let curM=null;
 // SWIPE
 let cur=1,tx=0,ty=0,trk=false;
 const PG={1:document.getElementById('p1'),2:document.getElementById('p2'),3:document.getElementById('p3')};
-document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;trk=false;},{passive:true});
-document.addEventListener('touchmove',e=>{const dx=Math.abs(e.touches[0].clientX-tx),dy=Math.abs(e.touches[0].clientY-ty);if(!trk&&dx>dy&&dx>8)trk=true;},{passive:true});
+document.addEventListener('touchstart',e=>{
+  if(scrActive)return;
+  tx=e.touches[0].clientX;ty=e.touches[0].clientY;trk=false;
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  if(scrActive)return;
+  const dx=Math.abs(e.touches[0].clientX-tx),dy=Math.abs(e.touches[0].clientY-ty);
+  if(!trk&&dx>dy&&dx>8)trk=true;
+},{passive:true});
 document.addEventListener('touchend',e=>{
-  if(!trk)return;
+  if(scrActive||!trk)return;
   const dx=e.changedTouches[0].clientX-tx;
   if(dx<-50&&cur<3)goTo(cur+1);
   else if(dx>50&&cur>1)goTo(cur-1);
@@ -205,77 +166,97 @@ function goTo(n){
   if(n===1)PG[1].classList.remove('hide');else PG[n].classList.add('show');
 }
 
-// HOLD PARA SAIR DO KIOSK — segure qualquer lugar vazio 3s
+// HOLD PARA SAIR DO KIOSK
 let ht=null,hs=false;
 function sh(e){e.stopPropagation();if(hs)return;hs=true;ht=setTimeout(xk,3000);}
 function ch(){if(!hs)return;hs=false;clearTimeout(ht);}
 function xk(){ch();toast('🔓 Saindo...');try{if(typeof fully!=='undefined')fully.exitKiosk();else toast('⚠ Fully não detectado',true);}catch(e){toast('⚠ Erro',true);}}
 
-// RELÓGIO SCREENSAVER
+// RELÓGIO
 const DAYS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 function uc(){
   const n=new Date();
-  const h12=n.getHours()%12||12;const h=String(h12).padStart(2,'0');
-  const m=String(n.getMinutes()).padStart(2,'0');
-  const d=String(n.getDate()).padStart(2,'0');
-  const mo=String(n.getMonth()+1).padStart(2,'0');
-  const y=n.getFullYear();
-  document.getElementById('scr-h').textContent=h;
-  document.getElementById('scr-m').textContent=m;
+  const h12=n.getHours()%12||12;
+  document.getElementById('scr-h').textContent=String(h12).padStart(2,'0');
+  document.getElementById('scr-m').textContent=String(n.getMinutes()).padStart(2,'0');
+  const d=String(n.getDate()).padStart(2,'0'),mo=String(n.getMonth()+1).padStart(2,'0'),y=n.getFullYear();
   document.getElementById('scr-date').textContent=d+'/'+mo+'/'+y+' · '+DAYS[n.getDay()];
 }
 uc();setInterval(uc,1000);
 
-// SCREENSAVER — ativa após 10s sem toque
+// ── SCREENSAVER ──────────────────────────────
+const scrEl=document.getElementById('scr');
+const ovEl=document.getElementById('block-overlay');
 let scrTimer=null;
+let scrActive=false;
+let scrBlocking=false;
+
+function showSCR(){
+  scrActive=true;
+  scrEl.classList.add('active');
+}
+function hideSCR(){
+  scrActive=false;
+  scrEl.classList.remove('active');
+  scrBlocking=true;
+  ovEl.classList.add('active');
+  setTimeout(()=>{scrBlocking=false;ovEl.classList.remove('active');},400);
+  resetSCR();
+}
 function resetSCR(){
   clearTimeout(scrTimer);
   scrTimer=setTimeout(showSCR,10000);
 }
-let scrBlocking=false;
-function showSCR(){document.getElementById('scr').classList.add('active');}
-function hideSCR(){
-  document.getElementById('scr').classList.remove('active');
-  scrBlocking=true;
-  const ov=document.getElementById('block-overlay');
-  ov.classList.add('active');
-  setTimeout(()=>{scrBlocking=false;ov.classList.remove('active');},500);
-  resetSCR();
-}
-document.addEventListener('touchstart',()=>{hideSCR();},{passive:true});
-resetSCR();
 
-// CLIMA — Open-Meteo (sem chave, grátis)
+// toque direto no screensaver — touchstart com preventDefault
+scrEl.addEventListener('touchstart',(e)=>{
+  e.preventDefault();
+  hideSCR();
+},{passive:false});
+scrEl.addEventListener('click',hideSCR);
+
+// overlay engole o toque durante os 400ms
+ovEl.addEventListener('touchstart',(e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+},{passive:false});
+
+// qualquer toque fora reinicia o timer
+document.addEventListener('touchstart',()=>{
+  if(!scrActive&&!scrBlocking)resetSCR();
+},{passive:true});
+
+resetSCR();
+// ─────────────────────────────────────────────
+
+// CLIMA
 const WC={0:'☀️ Céu limpo',1:'🌤️ Principalmente limpo',2:'⛅ Parcialmente nublado',3:'☁️ Nublado',45:'🌫️ Névoa',48:'🌫️ Névoa',51:'🌦️ Garoa leve',53:'🌦️ Garoa',55:'🌧️ Garoa forte',61:'🌧️ Chuva leve',63:'🌧️ Chuva',65:'🌧️ Chuva forte',71:'🌨️ Neve leve',73:'🌨️ Neve',75:'🌨️ Neve forte',80:'🌦️ Pancadas leves',81:'⛈️ Pancadas',82:'⛈️ Pancadas fortes',95:'⛈️ Tempestade',96:'⛈️ Tempestade c/ granizo',99:'⛈️ Tempestade forte'};
 async function loadWeather(){
   try{
     const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=-7.9&longitude=-34.9&current=temperature_2m,weathercode&temperature_unit=celsius&timezone=America/Recife');
     const d=await r.json();
     const temp=Math.round(d.current.temperature_2m);
-    const code=d.current.weathercode;
-    const desc=WC[code]||'🌡️ Tempo variável';
+    const desc=WC[d.current.weathercode]||'🌡️ Tempo variável';
     const parts=desc.split(' ');
-    const ico=parts[0];
-    const txt=parts.slice(1).join(' ');
-    document.getElementById('scr-weather').textContent=ico+' '+temp+'°C · '+txt;
-  }catch(e){
-    document.getElementById('wdesc').textContent='Sem conexão';
-    document.getElementById('scr-weather').textContent='Sem conexão';
-  }
+    document.getElementById('scr-weather').textContent=parts[0]+' '+temp+'°C · '+parts.slice(1).join(' ');
+  }catch(e){document.getElementById('scr-weather').textContent='⚠️ Sem conexão';}
 }
-loadWeather();
-setInterval(loadWeather,10*60*1000); // atualiza a cada 10 min
-const aC=new(window.AudioContext||window.webkitAudioContext)();
-function pN(f,d=.4,v=.5){const o=aC.createOscillator(),g=aC.createGain(),fl=aC.createBiquadFilter();o.connect(fl);fl.connect(g);g.connect(aC.destination);o.type='triangle';fl.type='lowpass';fl.frequency.value=2000;o.frequency.value=f;g.gain.setValueAtTime(v,aC.currentTime);g.gain.exponentialRampToValueAtTime(.001,aC.currentTime+d);o.start(aC.currentTime);o.stop(aC.currentTime+d);}
+loadWeather();setInterval(loadWeather,10*60*1000);
+
+// ÁUDIO
+let aC=null;
+function getAC(){if(!aC)aC=new(window.AudioContext||window.webkitAudioContext)();if(aC.state==='suspended')aC.resume();return aC;}
+function pN(f,d=.4,v=.5){const ctx=getAC();const o=ctx.createOscillator(),g=ctx.createGain(),fl=ctx.createBiquadFilter();o.connect(fl);fl.connect(g);g.connect(ctx.destination);o.type='triangle';fl.type='lowpass';fl.frequency.value=2000;o.frequency.value=f;g.gain.setValueAtTime(v,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);o.start(ctx.currentTime);o.stop(ctx.currentTime+d);}
 function pC(fs,d=.5){fs.forEach(f=>pN(f,d,.35));}
 function sLamp(){pC([261.6,329.6,392],.6);}function sRef(){pC([392,493.9,587.3],.5);}function sTV(){pC([329.6,415.3,523.3],.5);}function sMus(){pC([440,554.4,659.3,880],.7);}function sPl(){pN(523.3,.2,.4);}
 
-// DISPOSITIVOS T1
+// DISPOSITIVOS
 function tgl(k,cl,on,off){const c=document.getElementById('d-'+k),p=document.getElementById('pl-'+k),s=document.getElementById('s-'+k),isOn=c.classList.contains('on');if(k==='lamp')sLamp();if(k==='ref')sRef();if(isOn){c.classList.remove('on',cl);p.classList.remove('on');s.textContent=off;localStorage.setItem('st_'+k,'off');}else{c.classList.add('on',cl);p.classList.add('on');s.textContent=on;localStorage.setItem('st_'+k,'on');}}
 async function tTV(){sTV();tvOn=!tvOn;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(tvOn){c.classList.add('on','c');p.classList.add('on');s.textContent='Ligada';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='Desligada';}localStorage.setItem('tvOn',tvOn);try{await fetch(SRV+'/tv/power');toast(tvOn?'📺 TV ligada!':'📺 TV desligada!');}catch(e){toast('⚠ Wi-Fi?',true);}}
 function stv(on){if(tvOn===on)return;tvOn=on;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(on){c.classList.add('on','c');p.classList.add('on');s.textContent='TV online';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='TV offline';}localStorage.setItem('tvOn',on);}
 async function cRK(){try{const r=await fetch('http://'+RK+':8060/query/active-app');stv((await r.text()).includes('<app>'));}catch(e){stv(false);}}
 setInterval(cRK,5000);cRK();
+
 let oracaoOn=false;
 async function tOracao(){
   oracaoOn=!oracaoOn;
@@ -288,34 +269,15 @@ async function tOracao(){
 }
 async function tPl(){sPl();try{await fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'});toast('⏯ Play/Pause');}catch(e){toast('⚠ Falha',true);}}
 
-// MÚSICAS T2
+// MÚSICAS
 async function tMus(id){
-  if(curM===id){
-    // mesmo botão — para e reseta
-    document.getElementById('msd-'+id).textContent='CD Completo';
-    document.getElementById('mpp-'+id).style.display='none';
-    curM=null;
-    try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});}catch(e){}
-    toast('⏹ Voltando TV');
-    return;
-  }
-  // reseta anterior se existir
-  if(curM){
-    document.getElementById('msd-'+curM).textContent='CD Completo';
-    document.getElementById('mpp-'+curM).style.display='none';
-  }
-  curM=id;
-  document.getElementById('msd-'+id).textContent='Tocando...';
-  document.getElementById('mpp-'+id).style.display='flex';
-  sMus();
-  try{
-    await fetch('http://'+RK+':8060/launch/837?contentId='+MV[id]+'&mediaType=video',{method:'POST',mode:'no-cors'});
-    setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);
-    toast(ML[id]+' na TV!');
-  }catch(e){toast('⚠ Wi-Fi?',true);}
+  if(curM===id){document.getElementById('msd-'+id).textContent='CD Completo';document.getElementById('mpp-'+id).style.display='none';curM=null;try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});}catch(e){}toast('⏹ Voltando TV');return;}
+  if(curM){document.getElementById('msd-'+curM).textContent='CD Completo';document.getElementById('mpp-'+curM).style.display='none';}
+  curM=id;document.getElementById('msd-'+id).textContent='Tocando...';document.getElementById('mpp-'+id).style.display='flex';sMus();
+  try{await fetch('http://'+RK+':8060/launch/837?contentId='+MV[id]+'&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast(ML[id]+' na TV!');}catch(e){toast('⚠ Wi-Fi?',true);}
 }
 
-// CENAS T3
+// CENAS
 function s1(){toast('🌅 Bom dia! — configure em breve');}
 function s2(){toast('🌙 Boa noite! — configure em breve');}
 function s3(){toast('⚡ Ligar tudo — configure em breve');}
