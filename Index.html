@@ -18,6 +18,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans',sans-seri
 .scr-h,.scr-m{font-family:'DM Sans',sans-serif;font-weight:800;font-size:44vw;line-height:1;letter-spacing:-3px;color:#fff;text-align:center;width:100%;display:block;}
 .scr-bottom{display:flex;justify-content:center;width:100%;margin-top:20px;}
 .scr-date{font-family:'DM Sans',sans-serif;font-size:7vw;font-weight:700;color:#fff;letter-spacing:.06em;text-align:center;}
+#block-overlay{position:fixed;inset:0;z-index:99;display:none;}
+#block-overlay.active{display:block;}
 .gw{display:flex;flex-direction:column;width:100%;flex:1;gap:12px;min-height:0;max-height:calc(100vh - 60px);}
 .gr{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;width:100%;flex:1;min-height:0;}
 .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 18px 24px;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .3s;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;}
@@ -73,6 +75,8 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);border:1px solid rgba(57,224,122,.3);color:#39e07a;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:999;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}.toast.err{border-color:rgba(239,68,68,.3);color:#ef4444;}
 </style></head><body>
+
+<div id="block-overlay"></div>
 
 <!-- SCREENSAVER -->
 <div id="scr" onclick="hideSCR()">
@@ -219,14 +223,22 @@ function uc(){
 }
 uc();setInterval(uc,1000);
 
-// SCREENSAVER — ativa após 15s sem toque
+// SCREENSAVER — ativa após 10s sem toque
 let scrTimer=null;
 function resetSCR(){
   clearTimeout(scrTimer);
   scrTimer=setTimeout(showSCR,10000);
 }
+let scrBlocking=false;
 function showSCR(){document.getElementById('scr').classList.add('active');}
-function hideSCR(){document.getElementById('scr').classList.remove('active');resetSCR();}
+function hideSCR(){
+  document.getElementById('scr').classList.remove('active');
+  scrBlocking=true;
+  const ov=document.getElementById('block-overlay');
+  ov.classList.add('active');
+  setTimeout(()=>{scrBlocking=false;ov.classList.remove('active');},500);
+  resetSCR();
+}
 document.addEventListener('touchstart',()=>{hideSCR();},{passive:true});
 resetSCR();
 
