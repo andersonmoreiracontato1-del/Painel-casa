@@ -70,7 +70,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans',sans-seri
 .ppc{display:none;margin-top:8px;}
 .ppb{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:20px;padding:5px 16px;cursor:pointer;transition:background .2s;}
 .ppb:active{background:rgba(255,255,255,.25);}
-iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.fully-banner{display:none!important;}
+iframe,div[style*='position:fixed'][style*='bottom']{display:none!important;}
 .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);border:1px solid rgba(57,224,122,.3);color:#39e07a;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:999;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}.toast.err{border-color:rgba(239,68,68,.3);color:#ef4444;}
 </style></head><body>
@@ -128,7 +128,6 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 <div class="toast" id="tst"></div>
 <script>
 const RK='192.168.0.125';
-const SRV='http://192.168.0.111:8123';
 const MV={forro:'cGsaoaGz8BE',gospel:'nmB-mJvNplU',pagode:'_Oh9vwb8QUA',antigas:'ktdvBhZMiC4'};
 const ML={forro:'🎵 Forró',gospel:'🙏 Gospel',pagode:'🥁 Pagode',antigas:'🎶 Antigas'};
 let tvOn=localStorage.getItem('tvOn')==='true';
@@ -165,12 +164,6 @@ function goTo(n){
   if(pv===1)PG[1].classList.add('hide');else PG[pv].classList.remove('show');
   if(n===1)PG[1].classList.remove('hide');else PG[n].classList.add('show');
 }
-
-// HOLD PARA SAIR DO KIOSK
-let ht=null,hs=false;
-function sh(e){e.stopPropagation();if(hs)return;hs=true;ht=setTimeout(xk,3000);}
-function ch(){if(!hs)return;hs=false;clearTimeout(ht);}
-function xk(){ch();toast('🔓 Saindo...');try{if(typeof fully!=='undefined')fully.exitKiosk();else toast('⚠ Fully não detectado',true);}catch(e){toast('⚠ Erro',true);}}
 
 // RELÓGIO
 const DAYS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
