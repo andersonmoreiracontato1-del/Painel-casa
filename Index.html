@@ -2,7 +2,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
 :root{--bg:#080c14;--card:#111827;--card2:#1a2438;--border:rgba(255,255,255,0.07);--amber:#fbbf24;--ag:rgba(251,191,36,0.4);--green:#4ade80;--gg:rgba(74,222,128,0.4);--cyan:#22d3ee;--cg:rgba(34,211,238,0.4);--purple:#a78bfa;--pg:rgba(167,139,250,0.4);--white:#fff;--mono:'DM Mono',monospace;}
 html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--white);position:fixed;top:0;left:0;}
-.page{position:fixed;top:0;left:0;width:100%;height:100%;padding:24px 18px;background:radial-gradient(ellipse 100% 35% at 50% 0%,#1c3a5a28,transparent),var(--bg);display:flex;flex-direction:column;transition:transform .38s cubic-bezier(.4,0,.2,1);will-change:transform;overflow:hidden;}
+.page{position:fixed;top:0;left:0;width:100%;height:100%;padding:18px 18px;background:radial-gradient(ellipse 100% 35% at 50% 0%,#1c3a5a28,transparent),var(--bg);display:flex;flex-direction:column;transition:transform .38s cubic-bezier(.4,0,.2,1);will-change:transform;overflow:hidden;}
 #p1{transform:translateX(0);z-index:1;}#p1.hide{transform:translateX(-100%);}
 #p2{transform:translateX(100%);z-index:2;}#p2.show{transform:translateX(0);}
 #p3{transform:translateX(100%);z-index:2;}#p3.show{transform:translateX(0);}
@@ -10,14 +10,15 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans',sans-seri
 @keyframes hp{0%,100%{opacity:.3;transform:translateY(-50%) translateX(0);}50%{opacity:.55;transform:translateY(-50%) translateX(5px);}}
 .hint svg{width:22px;height:22px;display:block;}
 .hdr{width:100%;margin-bottom:18px;}
-.clk{font-family:var(--mono);font-size:clamp(4rem,20vw,6rem);font-weight:500;letter-spacing:-4px;line-height:1;color:var(--white);cursor:pointer;transition:color .3s;display:inline-block;position:relative;}
-.clk.holding{color:rgba(255,255,255,.4);}
-.clkp{position:absolute;bottom:-6px;left:0;height:2px;width:0%;background:rgba(255,255,255,.3);border-radius:2px;transition:none;}
-.clkp.anim{transition:width 3s linear;width:100%;}
-.wday{font-size:clamp(1.8rem,9vw,2.6rem);font-weight:700;margin-top:4px;text-transform:capitalize;letter-spacing:-.5px;line-height:1;}
-.dloc{font-size:clamp(1rem,5vw,1.3rem);font-weight:600;margin-top:5px;text-transform:capitalize;opacity:.9;}
 .ln{width:100%;height:1px;background:var(--border);margin-bottom:18px;}
-.gw{display:flex;flex-direction:column;width:100%;flex:1;gap:12px;min-height:0;max-height:calc(100vh - 200px);}
+/* SCREENSAVER */
+#scr{position:fixed;inset:0;z-index:100;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .8s ease;}
+#scr.active{opacity:1;pointer-events:all;}
+.scr-wrap{display:flex;flex-direction:column;align-items:center;width:100%;gap:0;}
+.scr-h,.scr-m{font-family:'DM Sans',sans-serif;font-weight:800;font-size:min(48vw,42vh);line-height:.82;letter-spacing:-4px;color:#fff;text-align:center;width:100%;}
+.scr-bottom{display:flex;justify-content:center;width:100%;margin-top:18px;}
+.scr-date{font-family:'DM Sans',sans-serif;font-size:clamp(1rem,5vw,1.5rem);font-weight:600;color:#fff;letter-spacing:.04em;text-align:center;}
+.gw{display:flex;flex-direction:column;width:100%;flex:1;gap:12px;min-height:0;max-height:calc(100vh - 60px);}
 .gr{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;width:100%;flex:1;min-height:0;}
 .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 18px 24px;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .3s;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;}
 .card::before{content:'';position:absolute;inset:0;border-radius:24px;opacity:0;transition:opacity .3s;pointer-events:none;}
@@ -73,14 +74,21 @@ iframe,div[style*='position:fixed'][style*='bottom'],#fully-license-banner,.full
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}.toast.err{border-color:rgba(239,68,68,.3);color:#ef4444;}
 </style></head><body>
 
+<!-- SCREENSAVER -->
+<div id="scr" onclick="hideSCR()">
+  <div class="scr-wrap">
+    <div class="scr-h" id="scr-h">00</div>
+    <div class="scr-m" id="scr-m">00</div>
+    <div class="scr-bottom">
+      <div class="scr-date" id="scr-date">--/--/---- · -------</div>
+    </div>
+  </div>
+</div>
+
 <!-- TELA 1 — PRINCIPAL -->
 <div class="page" id="p1">
 <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
-<div class="hdr">
-<div class="clk" id="clk" onmousedown="sh(event)" ontouchstart="sh(event)" onmouseup="ch()" onmouseleave="ch()" ontouchend="ch()" ontouchcancel="ch()">00:00:00<div class="clkp" id="clkp"></div></div>
-<div class="wday" id="wd">---</div><div class="dloc" id="dl">---</div>
-</div>
-<div class="ln"></div>
+<div class="ln" style="margin-top:8px;margin-bottom:18px;"></div>
 <div class="gw"><div class="gr">
 <div class="card a" id="d-lamp" onclick="tgl('lamp','a','Ligada','Desligada')">
 <div class="ct"><div class="ic">💡</div><div class="pill a" id="pl-lamp"></div></div>
@@ -190,15 +198,37 @@ function goTo(n){
   if(n===1)PG[1].classList.remove('hide');else PG[n].classList.add('show');
 }
 
-// HOLD RELÓGIO
+// HOLD PARA SAIR DO KIOSK — segure qualquer lugar vazio 3s
 let ht=null,hs=false;
-function sh(e){e.stopPropagation();if(hs)return;hs=true;const cl=document.getElementById('clk'),pr=document.getElementById('clkp');cl.classList.add('holding');pr.style.transition='none';pr.style.width='0%';pr.offsetWidth;pr.classList.add('anim');ht=setTimeout(xk,3000);}
-function ch(){if(!hs)return;hs=false;clearTimeout(ht);const cl=document.getElementById('clk'),pr=document.getElementById('clkp');cl.classList.remove('holding');pr.classList.remove('anim');pr.style.transition='width .2s ease';pr.style.width='0%';}
+function sh(e){e.stopPropagation();if(hs)return;hs=true;ht=setTimeout(xk,3000);}
+function ch(){if(!hs)return;hs=false;clearTimeout(ht);}
 function xk(){ch();toast('🔓 Saindo...');try{if(typeof fully!=='undefined')fully.exitKiosk();else toast('⚠ Fully não detectado',true);}catch(e){toast('⚠ Erro',true);}}
 
-// RELÓGIO
-function uc(){const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');const dy=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];const mo=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];document.getElementById('clk').firstChild.textContent=h+':'+m+':'+s;document.getElementById('wd').textContent=dy[n.getDay()];document.getElementById('dl').textContent=n.getDate()+' de '+mo[n.getMonth()]+' · Planalto';}
+// RELÓGIO SCREENSAVER
+const DAYS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+function uc(){
+  const n=new Date();
+  const h12=n.getHours()%12||12;const h=String(h12).padStart(2,'0');
+  const m=String(n.getMinutes()).padStart(2,'0');
+  const d=String(n.getDate()).padStart(2,'0');
+  const mo=String(n.getMonth()+1).padStart(2,'0');
+  const y=n.getFullYear();
+  document.getElementById('scr-h').textContent=h;
+  document.getElementById('scr-m').textContent=m;
+  document.getElementById('scr-date').textContent=d+'/'+mo+'/'+y+' · '+DAYS[n.getDay()];
+}
 uc();setInterval(uc,1000);
+
+// SCREENSAVER — ativa após 15s sem toque
+let scrTimer=null;
+function resetSCR(){
+  clearTimeout(scrTimer);
+  scrTimer=setTimeout(showSCR,15000);
+}
+function showSCR(){document.getElementById('scr').classList.add('active');}
+function hideSCR(){document.getElementById('scr').classList.remove('active');resetSCR();}
+document.addEventListener('touchstart',()=>{hideSCR();},{passive:true});
+resetSCR();
 
 // SONS
 const aC=new(window.AudioContext||window.webkitAudioContext)();
