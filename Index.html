@@ -128,6 +128,8 @@ iframe,div[style*='position:fixed'][style*='bottom']{display:none!important;}
 <div class="toast" id="tst"></div>
 <script>
 const RK='192.168.0.125';
+const NTFY='https://ntfy.sh/painel_anderson_2025';
+function ntfy(msg){fetch(NTFY,{method:'POST',body:msg}).catch(()=>{});};
 const MV={forro:'cGsaoaGz8BE',gospel:'nmB-mJvNplU',pagode:'_Oh9vwb8QUA',antigas:'ktdvBhZMiC4'};
 const ML={forro:'🎵 Forró',gospel:'🙏 Gospel',pagode:'🥁 Pagode',antigas:'🎶 Antigas'};
 let tvOn=localStorage.getItem('tvOn')==='true';
@@ -244,8 +246,8 @@ function pC(fs,d=.5){fs.forEach(f=>pN(f,d,.35));}
 function sLamp(){pC([261.6,329.6,392],.6);}function sRef(){pC([392,493.9,587.3],.5);}function sTV(){pC([329.6,415.3,523.3],.5);}function sMus(){pC([440,554.4,659.3,880],.7);}function sPl(){pN(523.3,.2,.4);}
 
 // DISPOSITIVOS
-function tgl(k,cl,on,off){const c=document.getElementById('d-'+k),p=document.getElementById('pl-'+k),s=document.getElementById('s-'+k),isOn=c.classList.contains('on');if(k==='lamp')sLamp();if(k==='ref')sRef();if(isOn){c.classList.remove('on',cl);p.classList.remove('on');s.textContent=off;localStorage.setItem('st_'+k,'off');}else{c.classList.add('on',cl);p.classList.add('on');s.textContent=on;localStorage.setItem('st_'+k,'on');}}
-async function tTV(){sTV();tvOn=!tvOn;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(tvOn){c.classList.add('on','c');p.classList.add('on');s.textContent='Ligada';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='Desligada';}localStorage.setItem('tvOn',tvOn);try{await fetch('http://'+RK+':8060/keypress/Power',{method:'POST',mode:'no-cors'});toast(tvOn?'📺 TV ligada!':'📺 TV desligada!');}catch(e){toast('⚠ Wi-Fi?',true);}}
+function tgl(k,cl,on,off){const c=document.getElementById('d-'+k),p=document.getElementById('pl-'+k),s=document.getElementById('s-'+k),isOn=c.classList.contains('on');if(k==='lamp')sLamp();if(k==='ref')sRef();if(isOn){c.classList.remove('on',cl);p.classList.remove('on');s.textContent=off;localStorage.setItem('st_'+k,'off');ntfy((k==='lamp'?'💡 Lâmpada':'🔦 Refletores')+' — '+off);}else{c.classList.add('on',cl);p.classList.add('on');s.textContent=on;localStorage.setItem('st_'+k,'on');ntfy((k==='lamp'?'💡 Lâmpada':'🔦 Refletores')+' — '+on);}}
+async function tTV(){sTV();tvOn=!tvOn;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(tvOn){c.classList.add('on','c');p.classList.add('on');s.textContent='Ligada';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='Desligada';}localStorage.setItem('tvOn',tvOn);try{await fetch('http://'+RK+':8060/keypress/Power',{method:'POST',mode:'no-cors'});toast(tvOn?'📺 TV ligada!':'📺 TV desligada!');ntfy(tvOn?'📺 TV — Ligada':'📺 TV — Desligada');}catch(e){toast('⚠ Wi-Fi?',true);}}
 function stv(on){if(tvOn===on)return;tvOn=on;const c=document.getElementById('d-tv'),p=document.getElementById('pl-tv'),s=document.getElementById('s-tv');if(on){c.classList.add('on','c');p.classList.add('on');s.textContent='TV online';}else{c.classList.remove('on','c');p.classList.remove('on');s.textContent='TV offline';}localStorage.setItem('tvOn',on);}
 async function cRK(){try{const r=await fetch('http://'+RK+':8060/query/active-app');stv((await r.text()).includes('<app>'));}catch(e){stv(false);}}
 setInterval(cRK,5000);cRK();
@@ -255,19 +257,19 @@ async function tOracao(){
   oracaoOn=!oracaoOn;
   const c=document.getElementById('d-oracao'),p=document.getElementById('pl-oracao'),s=document.getElementById('s-oracao');
   if(oracaoOn){c.classList.add('on','p');p.classList.add('on');s.textContent='Tocando...';
-    try{await fetch('http://'+RK+':8060/launch/837?contentId=mbYX71gieqA&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast('🙏 Oração na TV!');}catch(e){toast('⚠ Wi-Fi?',true);}
+    try{await fetch('http://'+RK+':8060/launch/837?contentId=mbYX71gieqA&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast('🙏 Oração na TV!');ntfy('🙏 Oração — Tocando na TV');}catch(e){toast('⚠ Wi-Fi?',true);}
   }else{c.classList.remove('on','p');p.classList.remove('on');s.textContent='YouTube';
-    try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});toast('⏹ Voltando TV');}catch(e){toast('⚠ Wi-Fi?',true);}
+    try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});toast('⏹ Voltando TV');ntfy('🙏 Oração — Parada');}catch(e){toast('⚠ Wi-Fi?',true);}
   }
 }
 async function tPl(){sPl();try{await fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'});toast('⏯ Play/Pause');}catch(e){toast('⚠ Falha',true);}}
 
 // MÚSICAS
 async function tMus(id){
-  if(curM===id){document.getElementById('msd-'+id).textContent='CD Completo';document.getElementById('mpp-'+id).style.display='none';curM=null;try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});}catch(e){}toast('⏹ Voltando TV');return;}
+  if(curM===id){document.getElementById('msd-'+id).textContent='CD Completo';document.getElementById('mpp-'+id).style.display='none';curM=null;try{await fetch('http://'+RK+':8060/launch/tvinput.dtv',{method:'POST',mode:'no-cors'});}catch(e){}toast('⏹ Voltando TV');ntfy('⏹ Música parada');return;}
   if(curM){document.getElementById('msd-'+curM).textContent='CD Completo';document.getElementById('mpp-'+curM).style.display='none';}
   curM=id;document.getElementById('msd-'+id).textContent='Tocando...';document.getElementById('mpp-'+id).style.display='flex';sMus();
-  try{await fetch('http://'+RK+':8060/launch/837?contentId='+MV[id]+'&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast(ML[id]+' na TV!');}catch(e){toast('⚠ Wi-Fi?',true);}
+  try{await fetch('http://'+RK+':8060/launch/837?contentId='+MV[id]+'&mediaType=video',{method:'POST',mode:'no-cors'});setTimeout(()=>fetch('http://'+RK+':8060/keypress/Play',{method:'POST',mode:'no-cors'}),2000);toast(ML[id]+' na TV!');ntfy(ML[id]+' — Tocando na TV');}catch(e){toast('⚠ Wi-Fi?',true);}
 }
 
 // CENAS
@@ -281,7 +283,7 @@ function af(){document.querySelectorAll('.cn').forEach(el=>el.style.fontSize=(el
 window.addEventListener('resize',af);af();
 
 // BATERIA
-async function mb(){if(!('getBattery' in navigator))return;const b=await navigator.getBattery();function v(){const p=Math.round(b.level*100);if(p<=20&&!b.charging)toast('🔋 Crítica! '+p+'%',true);else if(p<=30&&!b.charging)toast('🔋 Baixa '+p+'%',true);}b.addEventListener('levelchange',v);v();}
+async function mb(){if(!('getBattery' in navigator))return;const b=await navigator.getBattery();let n40=false;function v(){const p=Math.round(b.level*100);if(b.charging){n40=false;return;}if(p<=40&&!n40){n40=true;toast('🔋 Recarregue! '+p+'%',true);ntfy('🔋 Bateria em '+p+'% — Hora de recarregar!');}if(p<=20)toast('🔋 Crítica! '+p+'%',true);}b.addEventListener('levelchange',v);v();}
 mb();
 
 function toast(msg,e=false){const t=document.getElementById('tst');t.textContent=msg;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
